@@ -1,0 +1,58 @@
+﻿.holaestilo1{
+    margin:0 auto;
+    margin-top: 130px;
+    padding:0;
+}
+.fondo {
+    font-family: sans-serif;
+    background-image: url("img/fondo3.jpg");
+    background-size: cover;
+    min-height:683px;
+}
+.bodyError {
+    background-image: url('../userscontent/img/error.png');
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    background-color: aqua;
+    min-height: 1530px;
+    min-width: 740px;
+}
+
+.modal-content {
+    background-color: #434e5a;
+    opacity: 0.8;
+    padding: 0.18px;
+    border-radius: 10px;
+}
+
+.imagen {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 40px;
+    margin-top: 30px;
+}
+
+.imagenMedia {
+    width: 100px;
+    height: 100px;
+}
+
+.imagenPequeña {
+    width:70px;
+    height: 70px;
+    
+}
+
+.imagenMini {
+    width: 30px;
+    height: 30px;
+}
+.imagenGrande {
+    width: 250px;
+    height: 250px;
+}
+.imagenAumentada {
+    width: 5%;
+    height: 5%;
+}

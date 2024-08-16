@@ -1,0 +1,262 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="admin.master.cs" Inherits="paginaOficial.viewsAdmin.admin" %>
+
+
+
+<!DOCTYPE html>
+
+<html lang="es">
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+
+    <!--Logo de tituo de pagina-->
+    <link href="../userscontent/img/logoAsamblea.png" rel="shortcut icon" type="image/x-icon" />
+    <!--Tituos de pagina-->
+    <title><%: Page.Title %> - Asamblea Nacional</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="../admincontent/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+
+    <!-- Custom styles for this template-->
+    <link href="../admincontent/css/sb-admin-2.min.css" rel="stylesheet" />
+    <link href="../Content/hojaestilo1.css" rel="stylesheet" />
+
+    <!-- Temas CSS revisar conflicto en el footer -->
+    <link href="../userscontent/css/freelancer.min.css" rel="stylesheet" />
+    <%--<script src="../admincontent/vendor/jquery/jquery.min.js"></script>--%>
+
+    <script src="../Scripts/jquery-3.4.1.min.js"></script>
+    <link href="../Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="../Scripts/bootstrap.min.js"></script>
+
+
+</head>
+
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-dark sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center my-2" href="inicioAdmin.aspx">
+                <asp:Image ID="Image2" class="imagenPequeña" src="../userscontent/img/logoAsamblea.png" runat="server" />
+                <div class="sidebar-brand-text mx-3">Asamblea Nacional</div>
+            </a>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Usuarios
+            </div>
+
+            <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link" href="registro.aspx">
+                    <i class="fa fa-fw fa-user-plus"></i>
+                    <span>Crear</span></a>
+            </li>
+
+            
+            <li class="nav-item">
+                <a class="nav-link" href="listaUsuarios.aspx">
+                    <i class="fa fa-pen-square"></i>
+                    <span>Mantenimiento</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Visitas
+            </div>
+
+            <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link" href="registroVisitas.aspx">
+                    <i class="fa fa-address-card"></i>
+                    <span>Crear Visita</span></a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="buscarVisita.aspx">
+                    <i class="fa fa-fw fa-search"></i>
+                    <span>Historial de Visitas</span></a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="colaImpresion.aspx">
+                    <i class="fa fa-print"></i>
+                    <span>Cola de impresion</span></a>
+            </li>
+
+            <!-- Nav Item - finalizar visitas -->
+            <li class="nav-item">
+                <a class="nav-link" href="finalizarVisitas.aspx">
+                    <i class="fa fa-stopwatch"></i>
+                    <span>Finalizar Visitas</span></a>
+            </li>
+
+
+            <!-- Nav Item - Estadisticas -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#desplegableEstadisticas" aria-expanded="true" aria-controls="collapsePages">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    
+                    <span>Estadisticas</span>
+                </a>
+                <div id="desplegableEstadisticas" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Periodo de tiempo:</h6>
+                        <a class="collapse-item" href="estadisticasDiarias.aspx">Estadisticas Diarias</a>
+                        <a class="collapse-item" href="estadisticasMensuales.aspx">Estadisticas Mensuales</a>
+                    </div>
+                </div>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <!-- Sidebar Toggler (Sidebar) -->
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-gradient-dark topbar static-top shadow">
+
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <ul class="navbar-nav ml-auto">
+                        <!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Bienvenido </span>
+                                <img class="img-profile rounded-circle" src="../admincontent/img/iconAdmin.png" />
+                            </a>
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="infoCuentaAdmin.aspx">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Perfil
+                </a>
+                                <a class="dropdown-item" href="editarPerfilAdmin.aspx">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Editar Perfil
+                </a>
+                                <a class="dropdown-item" href="cambioContraseñaAdmin.aspx">
+                                    <i class="fa fa-key fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Cambio de Contraseña
+                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Cerrar Sesion
+                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </nav>
+                <!-- End of Topbar -->
+
+                <form class="form fondo" role="form" autocomplete="off" runat="server">
+                    <!-- contenio de la pagina -->
+                    <asp:ContentPlaceHolder ID="contenido" runat="server">
+                    </asp:ContentPlaceHolder>
+
+
+                    <!--ventana modal para confirmar finalizacion de session-->
+                    <div class="modal fade mt-5" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3 class="modal-title" id="exampleModalLabel">listo para salir?</h3>
+                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+
+                                <div class="modal-body text-center">finalizar la sesion?</div>
+                                <div class="modal-footer d-flex align-items-center justify-content-center">
+
+                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar ❌</button>
+                                    <asp:Button ID="btnRegbtnCerrarsesionistrar" CssClass="btn btn-primary" runat="server" Text="Aceptar ✔" OnClick="btnCerrarsesion_Click" CausesValidation="false"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </form>
+
+
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto bg-white">
+                    <div class="copyright text-center my-auto">
+                        <small>&copy; <%: DateTime.Now.Year %> - Asamblea Nacional de Panamá</small>
+                        <asp:Image ID="Image3" class="imagenMini ml-1" src="../userscontent/img/logoAsamblea.png" runat="server" />
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- boton para retornar al inicio de la pagina-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="../admincontent/vendor/jquery/jquery.min.js"></script>
+    <%--    <script src="../admincontent/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>--%>
+
+    <!-- Core plugin JavaScript-->
+    <script src="../admincontent/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="../admincontent/js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="../admincontent/vendor/chart.js/Chart.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="../admincontent/js/demo/chart-area-demo.js"></script>
+    <script src="../admincontent/js/demo/chart-pie-demo.js"></script>
+</body>
+
+</html>
