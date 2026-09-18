@@ -38,6 +38,12 @@
             <asp:TextBox ID="TxtHasta" CssClass="active" runat="server" ToolTip="📅 final de rago de busqueda" TextMode="Date"></asp:TextBox>
             <asp:Label ID="Label1" runat="server" Text="Label">#Visita</asp:Label>
             <asp:TextBox ID="txtNumero" CssClass="active" runat="server"></asp:TextBox>
+            <asp:Label ID="Label10" runat="server" Text="Label">Motivo</asp:Label>
+            <asp:DropDownList ID="listMotivo" CssClass="active" ToolTip="Escoja el motivo de visita" runat="server">
+                <asp:ListItem Value="0">📝 Seleccionar</asp:ListItem>
+            </asp:DropDownList>
+            <asp:Label ID="Label12" runat="server" Text="Label">Cedula</asp:Label>
+            <asp:TextBox ID="txtCedula" CssClass="active" runat="server" ToolTip="Cedula del visitante"></asp:TextBox>
             <asp:Button ID="btnfiltrar" CssClass="btn btn-success btn-lg  mr-1" ToolTip="Aplicar Filtro" runat="server" Text="🔎" OnClick="btnfiltrar_Click" />
             <asp:Button ID="btnReporte" CssClass="btn btn-primary btn-lg  mr-1" ToolTip="Generar Reporte" runat="server" Text="📥" OnClick="btnReporte_Click" />
 

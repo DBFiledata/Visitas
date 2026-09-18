@@ -34,6 +34,14 @@ namespace paginaOficial.viewsAdmin
                 {
                     listTipo.Items.Add(new ListItem(r[1].ToString(), r[0].ToString()));
                 }
+
+                odbusuario = new Controlers.BaseDatos();
+                DataSet ds3 = odbusuario.listaRazonesVisitas();
+                DataTable dtMotivos = ds3.Tables[0];
+                foreach (DataRow r in dtMotivos.Rows)
+                {
+                    listMotivo.Items.Add(new ListItem(r[1].ToString(), r[0].ToString()));
+                }
             }
             else
             {
@@ -43,19 +51,20 @@ namespace paginaOficial.viewsAdmin
 
         }
 
-        protected void btnfiltrar_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Lee y normaliza los controles de filtro (sentinels) usados tanto por la grilla
+        /// como por el export a Excel, evitando duplicar la logica en ambos handlers.
+        /// Devuelve false (y muestra un alert) si el rango de fechas es invalido.
+        /// </summary>
+        private bool LeerFiltros(out int area, out int lugar, out int motivo, out string cedula, out int numero, out string desde, out string hasta)
         {
-            odbusuario = new Controlers.BaseDatos();
-            string  desde, hasta;
-            int numero, tipo, lugar;
-
             if (listTipo.SelectedIndex > 0)
             {
-                tipo= Convert.ToInt32(listTipo.SelectedValue);
+                area = Convert.ToInt32(listTipo.SelectedValue);
             }
             else
             {
-                tipo = 0;
+                area = 0;
             }
             if (listLugar.SelectedIndex > 0)
             {
@@ -65,6 +74,15 @@ namespace paginaOficial.viewsAdmin
             {
                 lugar = 0;
             }
+            if (listMotivo.SelectedIndex > 0)
+            {
+                motivo = Convert.ToInt32(listMotivo.SelectedValue);
+            }
+            else
+            {
+                motivo = 0;
+            }
+            cedula = txtCedula.Text != string.Empty ? txtCedula.Text.Trim() : string.Empty;
             if (txtDesde.Text != string.Empty)
             {
                 desde = txtDesde.Text;
@@ -89,7 +107,31 @@ namespace paginaOficial.viewsAdmin
             {
                 numero = 0;
             }
-            DataSet ds = odbusuario.filtroVisitas(tipo, lugar, numero, desde, hasta);
+
+            DateTime desdeFecha, hastaFecha;
+            if (desde != "0000-00-00" && hasta != "0000-00-00"
+                && DateTime.TryParse(desde, out desdeFecha) && DateTime.TryParse(hasta, out hastaFecha)
+                && desdeFecha > hastaFecha)
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "Pop", "alert('La fecha Desde no puede ser posterior a la fecha Hasta');", true);
+                return false;
+            }
+
+            return true;
+        }
+
+        protected void btnfiltrar_Click(object sender, EventArgs e)
+        {
+            odbusuario = new Controlers.BaseDatos();
+            int area, lugar, motivo, numero;
+            string cedula, desde, hasta;
+
+            if (!LeerFiltros(out area, out lugar, out motivo, out cedula, out numero, out desde, out hasta))
+            {
+                return;
+            }
+
+            DataSet ds = odbusuario.filtroVisitas(area, lugar, motivo, cedula, numero, desde, hasta);
             this.GridView1.DataSource = ds.Tables[0];
             this.GridView1.DataBind();
         }
@@ -97,52 +139,16 @@ namespace paginaOficial.viewsAdmin
         protected void btnReporte_Click(object sender, EventArgs e)
         {
             odbusuario = new Controlers.BaseDatos();
-            string desde, hasta;
-            int numero, tipo, lugar;
+            int area, lugar, motivo, numero;
+            string cedula, desde, hasta;
 
-            if (listTipo.SelectedIndex > 0)
+            if (!LeerFiltros(out area, out lugar, out motivo, out cedula, out numero, out desde, out hasta))
             {
-                tipo = Convert.ToInt32(listTipo.SelectedValue);
-            }
-            else
-            {
-                tipo = 0;
-            }
-            if (listLugar.SelectedIndex > 0)
-            {
-                lugar = Convert.ToInt32(listLugar.SelectedValue);
-            }
-            else
-            {
-                lugar = 0;
-            }
-            if (txtDesde.Text != string.Empty)
-            {
-                desde = txtDesde.Text;
-            }
-            else
-            {
-                desde = "0000-00-00";
-            }
-            if (TxtHasta.Text != string.Empty)
-            {
-                hasta = TxtHasta.Text;
-            }
-            else
-            {
-                hasta = "0000-00-00";
-            }
-            if (txtNumero.Text != string.Empty)
-            {
-                numero = Convert.ToInt32(txtNumero.Text);
-            }
-            else
-            {
-                numero = 0;
+                return;
             }
 
             //exportacion a exel
-            DataSet ds = odbusuario.filtroVisitas(tipo, lugar, numero, desde, hasta);
+            DataSet ds = odbusuario.filtroVisitas(area, lugar, motivo, cedula, numero, desde, hasta);
             var grid = new GridView();
             grid.DataSource = ds.Tables[0];
             grid.DataBind();
