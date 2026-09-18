@@ -181,7 +181,7 @@ namespace paginaOficial.viewsAdmin
             {
                 //int num = Convert.ToInt32(RadMultiSelect1.Value);
                 odbusuario = new Controlers.BaseDatos();
-                if (odbusuario.crearVisitas(listTipoArea.SelectedIndex, listMotivo.SelectedIndex, Lugar, listMotivo.SelectedValue, ((string)Session["id_user"]), txtId.Text))
+                if (odbusuario.crearVisitas(Convert.ToInt32(listTipoArea.SelectedValue), Convert.ToInt32(listMotivo.SelectedValue), Lugar, listMotivo.SelectedValue, ((string)Session["id_user"]), txtId.Text))
                 {
                     txtId.Text = "";
                     txtNombre.Text = "";
