@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -14,6 +15,14 @@ namespace paginaOficial.viewsAdmin
             if (!User.Identity.IsAuthenticated | ((string)Session["type"]) != "administrador")
             {
                 Response.Redirect("~/Login.aspx");
+            }
+
+            if (!Page.IsPostBack)
+            {
+                Controlers.BaseDatos bd = new Controlers.BaseDatos();
+                DataSet ds = bd.ultimasVisitas(10);
+                gvUltimasVisitas.DataSource = ds.Tables[0];
+                gvUltimasVisitas.DataBind();
             }
         }
     }

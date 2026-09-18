@@ -26,4 +26,10 @@
 
         </div>
     </header>
+
+    <div class="container mt-4">
+        <h3>Últimas visitas</h3>
+        <asp:GridView ID="gvUltimasVisitas" CssClass="table table-striped table-dark table-bordered" Width="100%" runat="server" EmptyDataText="Sin visitas recientes">
+        </asp:GridView>
+    </div>
 </asp:Content>
