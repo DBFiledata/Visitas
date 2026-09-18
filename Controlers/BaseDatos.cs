@@ -660,6 +660,365 @@ namespace paginaOficial.Controlers
             return ds;
         }
 
+        // ===== Catalogos CRUD (Area) - sdd/crud-catalogos-area-lugar-motivo, Slice 1 =====
+
+        public bool CrearArea(string nombre)
+        {
+            try
+            {
+                bool ejecucion;
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "crearArea";
+                Cmd.Parameters.Add(new MySqlParameter("@p_nombre", nombre));
+                Cmd.Connection.Open();
+                int d = Cmd.ExecuteNonQuery();
+
+                if (d > 0)
+                {
+                    ejecucion = true;
+                }
+                else
+                {
+                    ejecucion = false;
+                }
+                Cmd.Connection.Close();
+                return ejecucion;
+            }
+            catch (Exception e)
+            {
+                //OError.Write_error(e.Message + "-" + e.StackTrace);
+                //OError.Error_msg = error_con;
+                return false;
+
+            }
+        }
+
+        public bool ActualizarArea(string id, string nombre)
+        {
+            try
+            {
+                bool ejecucion;
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "actualizarArea";
+                Cmd.Parameters.Add(new MySqlParameter("@p_id", id));
+                Cmd.Parameters.Add(new MySqlParameter("@p_nombre", nombre));
+                Cmd.Connection.Open();
+                int d = Cmd.ExecuteNonQuery();
+
+                if (d > 0)
+                {
+                    ejecucion = true;
+                }
+                else
+                {
+                    ejecucion = false;
+                }
+                Cmd.Connection.Close();
+                return ejecucion;
+            }
+            catch (Exception e)
+            {
+                //OError.Write_error(e.Message + "-" + e.StackTrace);
+                //OError.Error_msg = error_con;
+                return false;
+
+            }
+        }
+
+        public bool EliminarArea(string id)
+        {
+            try
+            {
+                bool ejecucion;
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "eliminarArea";
+                Cmd.Parameters.Add(new MySqlParameter("@p_id", id));
+                Cmd.Connection.Open();
+                int d = Cmd.ExecuteNonQuery();
+
+                if (d > 0)
+                {
+                    ejecucion = true;
+                }
+                else
+                {
+                    ejecucion = false;
+                }
+                Cmd.Connection.Close();
+                return ejecucion;
+            }
+            catch (Exception e)
+            {
+                //OError.Write_error(e.Message + "-" + e.StackTrace);
+                //OError.Error_msg = error_con;
+                return false;
+
+            }
+        }
+
+        public DataSet ListaAreasAdmin()
+        {
+            try
+            {
+                ds = new DataSet();
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "listaAreasAdmin";
+                Adap = new MySqlDataAdapter(Cmd);
+                Adap.Fill(ds);
+            }
+            catch (Exception e)
+            {
+                //OError.Write_error(e.Message + "-" + e.StackTrace);
+                //OError.Error_msg = error_con;
+
+            }
+            return ds;
+        }
+
+        // ===== Catalogos CRUD (Lugar) - sdd/crud-catalogos-area-lugar-motivo, Slice 2 =====
+
+        public bool CrearLugar(string nombre, string idArea)
+        {
+            try
+            {
+                bool ejecucion;
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "crearLugar";
+                Cmd.Parameters.Add(new MySqlParameter("@p_nombre", nombre));
+                Cmd.Parameters.Add(new MySqlParameter("@p_idArea", idArea));
+                Cmd.Connection.Open();
+                int d = Cmd.ExecuteNonQuery();
+
+                if (d > 0)
+                {
+                    ejecucion = true;
+                }
+                else
+                {
+                    ejecucion = false;
+                }
+                Cmd.Connection.Close();
+                return ejecucion;
+            }
+            catch (Exception e)
+            {
+                //OError.Write_error(e.Message + "-" + e.StackTrace);
+                //OError.Error_msg = error_con;
+                return false;
+
+            }
+        }
+
+        public bool ActualizarLugar(string id, string nombre, string idArea)
+        {
+            try
+            {
+                bool ejecucion;
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "actualizarLugar";
+                Cmd.Parameters.Add(new MySqlParameter("@p_id", id));
+                Cmd.Parameters.Add(new MySqlParameter("@p_nombre", nombre));
+                Cmd.Parameters.Add(new MySqlParameter("@p_idArea", idArea));
+                Cmd.Connection.Open();
+                int d = Cmd.ExecuteNonQuery();
+
+                if (d > 0)
+                {
+                    ejecucion = true;
+                }
+                else
+                {
+                    ejecucion = false;
+                }
+                Cmd.Connection.Close();
+                return ejecucion;
+            }
+            catch (Exception e)
+            {
+                //OError.Write_error(e.Message + "-" + e.StackTrace);
+                //OError.Error_msg = error_con;
+                return false;
+
+            }
+        }
+
+        public bool EliminarLugar(string id)
+        {
+            try
+            {
+                bool ejecucion;
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "eliminarLugar";
+                Cmd.Parameters.Add(new MySqlParameter("@p_id", id));
+                Cmd.Connection.Open();
+                int d = Cmd.ExecuteNonQuery();
+
+                if (d > 0)
+                {
+                    ejecucion = true;
+                }
+                else
+                {
+                    ejecucion = false;
+                }
+                Cmd.Connection.Close();
+                return ejecucion;
+            }
+            catch (Exception e)
+            {
+                //OError.Write_error(e.Message + "-" + e.StackTrace);
+                //OError.Error_msg = error_con;
+                return false;
+
+            }
+        }
+
+        public DataSet ListaLugaresAdmin()
+        {
+            try
+            {
+                ds = new DataSet();
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "listaLugaresAdmin";
+                Adap = new MySqlDataAdapter(Cmd);
+                Adap.Fill(ds);
+            }
+            catch (Exception e)
+            {
+                //OError.Write_error(e.Message + "-" + e.StackTrace);
+                //OError.Error_msg = error_con;
+
+            }
+            return ds;
+        }
+
+        // ===== Catalogos CRUD (Motivo) - sdd/crud-catalogos-area-lugar-motivo, Slice 3 =====
+
+        public bool CrearMotivo(string nombre)
+        {
+            try
+            {
+                bool ejecucion;
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "crearMotivo";
+                Cmd.Parameters.Add(new MySqlParameter("@p_nombre", nombre));
+                Cmd.Connection.Open();
+                int d = Cmd.ExecuteNonQuery();
+
+                if (d > 0)
+                {
+                    ejecucion = true;
+                }
+                else
+                {
+                    ejecucion = false;
+                }
+                Cmd.Connection.Close();
+                return ejecucion;
+            }
+            catch (Exception e)
+            {
+                //OError.Write_error(e.Message + "-" + e.StackTrace);
+                //OError.Error_msg = error_con;
+                return false;
+
+            }
+        }
+
+        public bool ActualizarMotivo(string id, string nombre)
+        {
+            try
+            {
+                bool ejecucion;
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "actualizarMotivo";
+                Cmd.Parameters.Add(new MySqlParameter("@p_id", id));
+                Cmd.Parameters.Add(new MySqlParameter("@p_nombre", nombre));
+                Cmd.Connection.Open();
+                int d = Cmd.ExecuteNonQuery();
+
+                if (d > 0)
+                {
+                    ejecucion = true;
+                }
+                else
+                {
+                    ejecucion = false;
+                }
+                Cmd.Connection.Close();
+                return ejecucion;
+            }
+            catch (Exception e)
+            {
+                //OError.Write_error(e.Message + "-" + e.StackTrace);
+                //OError.Error_msg = error_con;
+                return false;
+
+            }
+        }
+
+        public bool EliminarMotivo(string id)
+        {
+            try
+            {
+                bool ejecucion;
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "eliminarMotivo";
+                Cmd.Parameters.Add(new MySqlParameter("@p_id", id));
+                Cmd.Connection.Open();
+                int d = Cmd.ExecuteNonQuery();
+
+                if (d > 0)
+                {
+                    ejecucion = true;
+                }
+                else
+                {
+                    ejecucion = false;
+                }
+                Cmd.Connection.Close();
+                return ejecucion;
+            }
+            catch (Exception e)
+            {
+                //OError.Write_error(e.Message + "-" + e.StackTrace);
+                //OError.Error_msg = error_con;
+                return false;
+
+            }
+        }
+
+        public DataSet ListaMotivosAdmin()
+        {
+            try
+            {
+                ds = new DataSet();
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "listaMotivosAdmin";
+                Adap = new MySqlDataAdapter(Cmd);
+                Adap.Fill(ds);
+            }
+            catch (Exception e)
+            {
+                //OError.Write_error(e.Message + "-" + e.StackTrace);
+                //OError.Error_msg = error_con;
+
+            }
+            return ds;
+        }
+
         public DataSet filtroColaImprsion(string estado, int numero)
         {
             try
@@ -756,7 +1115,7 @@ namespace paginaOficial.Controlers
 
         }
 
-        public DataSet filtroVisitas(int area, int lugar, int numero, string desde, string hasta)
+        public DataSet filtroVisitas(int area, int lugar, int motivo, string cedula, int numero, string desde, string hasta)
         {
             try
             {
@@ -767,9 +1126,34 @@ namespace paginaOficial.Controlers
                 Cmd.CommandText = "filtroVisitas";
                 Cmd.Parameters.Add(new MySqlParameter("@area", area));
                 Cmd.Parameters.Add(new MySqlParameter("@lugar", lugar));
+                Cmd.Parameters.Add(new MySqlParameter("@motivo", motivo));
+                Cmd.Parameters.Add(new MySqlParameter("@cedula", cedula));
                 Cmd.Parameters.Add(new MySqlParameter("@numero", numero));
                 Cmd.Parameters.Add(new MySqlParameter("@desde", desde));
                 Cmd.Parameters.Add(new MySqlParameter("@hasta", hasta));
+                ds = new DataSet();//instancia dataset
+                Adap = new MySqlDataAdapter(Cmd);//adapter se pasa el cmd
+                Adap.Fill(ds);//se asigna el dataset al adapter
+            }
+            catch (Exception e)
+            {
+                //OError.Write_error(e.Message + "-" + e.StackTrace);
+                //OError.Error_msg = error_con;
+
+            }
+            return ds;
+        }
+
+        public DataSet ultimasVisitas(int topN)
+        {
+            try
+            {
+
+                ds = new DataSet();
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "ultimasVisitas";
+                Cmd.Parameters.Add(new MySqlParameter("@topN", topN));
                 ds = new DataSet();//instancia dataset
                 Adap = new MySqlDataAdapter(Cmd);//adapter se pasa el cmd
                 Adap.Fill(ds);//se asigna el dataset al adapter
