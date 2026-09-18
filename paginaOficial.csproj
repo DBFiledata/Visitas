@@ -2026,6 +2026,7 @@
     <Content Include="viewsAdmin\buscarVisita.aspx" />
     <Content Include="viewsAdmin\buscarVisitantes.aspx" />
     <Content Include="viewsAdmin\cambioContraseñaAdmin.aspx" />
+    <Content Include="viewsAdmin\catalogos.aspx" />
     <Content Include="viewsAdmin\colaImpresion.aspx" />
     <Content Include="viewsAdmin\CS1.aspx" />
     <Content Include="viewsAdmin\editarPerfilAdmin.aspx" />
@@ -2190,6 +2191,13 @@
     </Compile>
     <Compile Include="viewsAdmin\cambioContraseñaAdmin.aspx.designer.cs">
       <DependentUpon>cambioContraseñaAdmin.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="viewsAdmin\catalogos.aspx.cs">
+      <DependentUpon>catalogos.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="viewsAdmin\catalogos.aspx.designer.cs">
+      <DependentUpon>catalogos.aspx</DependentUpon>
     </Compile>
     <Compile Include="viewsAdmin\colaImpresion.aspx.cs">
       <DependentUpon>colaImpresion.aspx</DependentUpon>
