@@ -78,6 +78,24 @@ namespace paginaOficial.viewsAdmin
         protected global::System.Web.UI.WebControls.Button btnBuscarInfo;
 
         /// <summary>
+        /// Control btnEscanearQR.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnEscanearQR;
+
+        /// <summary>
+        /// Control btnCancelarQR.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnCancelarQR;
+
+        /// <summary>
         /// Control Label4.
         /// </summary>
         /// <remarks>

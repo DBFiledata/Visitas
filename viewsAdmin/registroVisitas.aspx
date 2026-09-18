@@ -4,6 +4,7 @@
 
 <asp:Content ID="BodyContenido" ContentPlaceHolderID="contenido" runat="server">
     <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+    <script src="../Scripts/jsQR.min.js"></script>
     <script type="text/javascript">
         var pageUrl = "registroVisitas.aspx";
         (async function () {
@@ -36,6 +37,92 @@
 
             document.getElementById("saveFoto").style.display = 'block';
         }
+
+        var qrScan = {
+            stream: null,
+            rafId: null,
+            video: null,
+            canvas: null,
+            ctx: null,
+
+            start: function () {
+                var self = this;
+                var errorEl = document.getElementById('qrScanError');
+                var btnScan = document.getElementById('<%= btnEscanearQR.ClientID %>');
+                var btnCancel = document.getElementById('<%= btnCancelarQR.ClientID %>');
+
+                errorEl.style.display = 'none';
+                errorEl.textContent = '';
+
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof jsQR !== 'function') {
+                    errorEl.textContent = 'El escaneo de QR no es compatible con este navegador. Ingrese la cédula manualmente.';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+
+                this.video = document.getElementById('qrScanVideo');
+                this.canvas = document.getElementById('qrScanCanvas');
+                this.ctx = this.canvas.getContext('2d');
+
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                    .then(function (mediaStream) {
+                        self.stream = mediaStream;
+                        self.video.srcObject = mediaStream;
+                        self.video.play();
+                        btnScan.style.display = 'none';
+                        btnCancel.style.display = 'inline-block';
+                        self.rafId = requestAnimationFrame(function () { self.tick(); });
+                    })
+                    .catch(function () {
+                        errorEl.textContent = 'No se pudo acceder a la cámara. Verifique los permisos del navegador.';
+                        errorEl.style.display = 'block';
+                        self.stop();
+                    });
+            },
+
+            tick: function () {
+                var self = this;
+
+                if (this.video && this.video.readyState === this.video.HAVE_ENOUGH_DATA) {
+                    this.canvas.width = this.video.videoWidth;
+                    this.canvas.height = this.video.videoHeight;
+                    this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+
+                    var imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+                    var code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
+
+                    if (code && code.data) {
+                        document.getElementById('<%= txtId.ClientID %>').value = code.data;
+                        this.stop();
+                        document.getElementById('<%= btnBuscarInfo.ClientID %>').click();
+                        return;
+                    }
+                }
+
+                this.rafId = requestAnimationFrame(function () { self.tick(); });
+            },
+
+            stop: function () {
+                if (this.rafId) {
+                    cancelAnimationFrame(this.rafId);
+                    this.rafId = null;
+                }
+                if (this.stream) {
+                    this.stream.getTracks().forEach(function (t) { t.stop(); });
+                    this.stream = null;
+                }
+                if (this.video) {
+                    this.video.srcObject = null;
+                }
+
+                var btnScan = document.getElementById('<%= btnEscanearQR.ClientID %>');
+                var btnCancel = document.getElementById('<%= btnCancelarQR.ClientID %>');
+                if (btnScan) btnScan.style.display = 'inline-block';
+                if (btnCancel) btnCancel.style.display = 'none';
+            }
+        };
+
+        window.addEventListener('pagehide', function () { qrScan.stop(); });
 
     </script>
 
@@ -72,6 +159,18 @@
                                         <div class="form-group d-flex justify-content-center mb-n2 mt-n2">
                                             <asp:Button ID="btnBuscarInfo" CssClass="btn btn-success btn-lg" runat="server" Text="🔎"
                                                 ToolTip="Buscar informacion &#10;" OnClick="btnBuscarInfo_Click" CausesValidation="false" />
+                                            <asp:Button ID="btnEscanearQR" CssClass="btn btn-primary btn-lg ml-1" runat="server" Text="📷 QR"
+                                                ToolTip="Escanear cédula por QR &#10;" OnClientClick="qrScan.start(); return false;" CausesValidation="false" />
+                                            <asp:Button ID="btnCancelarQR" CssClass="btn btn-danger btn-lg ml-1" runat="server" Text="Cancelar ❌"
+                                                ToolTip="Cancelar escaneo &#10;" OnClientClick="qrScan.stop(); return false;" CausesValidation="false"
+                                                Style="display:none;" />
+                                        </div>
+
+                                        <video id="qrScanVideo" autoplay playsinline muted style="display:none;"></video>
+                                        <canvas id="qrScanCanvas" style="display:none;"></canvas>
+
+                                        <div class="form-group d-flex align-items-center justify-content-center mb-n2">
+                                            <div id="qrScanError" class="text-danger text-center small" style="display:none;"></div>
                                         </div>
 
                                         <div class="form-group d-flex align-items-center justify-content-center mb-n2">
