@@ -78,6 +78,36 @@ namespace paginaOficial.viewsAdmin
         protected global::System.Web.UI.WebControls.HiddenField hfQrData;
 
         /// <summary>
+        /// Control rblModoVisita.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.RadioButtonList rblModoVisita;
+
+        /// <summary>
+        /// Control pnlCedula.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Panel pnlCedula;
+
+        /// <summary>
+        /// Control pnlCantidad.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Panel pnlCantidad;
+
+        /// <summary>
+        /// Control lblCantidad.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblCantidad;
+
+        /// <summary>
+        /// Control txtCantidad.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.TextBox txtCantidad;
+
+        /// <summary>
+        /// Control pnlNacionalidad.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Panel pnlNacionalidad;
+
+        /// <summary>
         /// Control btnBuscarInfo.
         /// </summary>
         /// <remarks>

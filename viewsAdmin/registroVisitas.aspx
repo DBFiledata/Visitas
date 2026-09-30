@@ -166,6 +166,14 @@
                                     </div>
 
                                     <div class="card-body col-6 mb-3">
+                                        <div class="form-group d-flex justify-content-center mt-n3">
+                                            <asp:RadioButtonList ID="rblModoVisita" runat="server" RepeatDirection="Horizontal" CellPadding="4"
+                                                AutoPostBack="true" OnSelectedIndexChanged="rblModoVisita_SelectedIndexChanged">
+                                                <asp:ListItem Value="individual" Selected="True">Individual</asp:ListItem>
+                                                <asp:ListItem Value="grupal">Visita grupal</asp:ListItem>
+                                            </asp:RadioButtonList>
+                                        </div>
+                                        <asp:Panel ID="pnlCedula" runat="server">
                                         <div class="form-group d-flex align-items-center justify-content-center mt-n3">
                                             <div class="form-group col-12">
                                                 <asp:Label ID="Label7" runat="server" Text="Label">Cedula</asp:Label>
@@ -192,16 +200,23 @@
                                         <div class="form-group d-flex align-items-center justify-content-center mb-n2">
                                             <div id="qrScanError" class="text-danger text-center small" style="display:none;"></div>
                                         </div>
+                                        </asp:Panel>
 
                                         <div class="form-group d-flex align-items-center justify-content-center mb-n2">
                                             <div class="form-group col-12">
                                                 <asp:Label ID="Label4" runat="server" Text="Label">Nombre</asp:Label>
                                                 <asp:TextBox ID="txtNombre" CssClass="form-control mt-2" placeholder="📝" runat="server"></asp:TextBox>
+                                                <asp:Panel ID="pnlCantidad" runat="server" Visible="false">
+                                                    <asp:Label ID="lblCantidad" runat="server" Text="Cantidad de personas"></asp:Label>
+                                                    <asp:TextBox ID="txtCantidad" CssClass="form-control mt-2" placeholder="👥" runat="server" TextMode="Number" min="1"></asp:TextBox>
+                                                </asp:Panel>
+                                                <asp:Panel ID="pnlNacionalidad" runat="server">
                                                 <asp:Label ID="Label2" runat="server" Text="Label">Nacionalidad</asp:Label>
                                                 <asp:RadioButtonList ID="RBtnNacionalidad" runat="server" RepeatDirection="Horizontal" CellPadding="2">
                                                     <asp:ListItem>Panameña</asp:ListItem>
                                                     <asp:ListItem>Extranjera</asp:ListItem>
                                                 </asp:RadioButtonList>
+                                                </asp:Panel>
                                             </div>
                                         </div>
 

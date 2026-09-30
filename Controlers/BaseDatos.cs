@@ -551,7 +551,33 @@ namespace paginaOficial.Controlers
             }
         }
 
-        //vericar procedure 
+        // Visita grupal (tabla group_visits, independiente de visits). area -> lugar_id (places),
+        // lugar -> idtypeOfPlaces (typeofplaces), motivo -> idreasonsForVisits, igual que crearVisitas.
+        public bool crearVisitaGrupal(string entidad, int cantidad, int area, int lugar, int motivo, string userName)
+        {
+            try
+            {
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "crearVisitaGrupal";
+                Cmd.Parameters.Add(new MySqlParameter("@p_entidad", entidad));
+                Cmd.Parameters.Add(new MySqlParameter("@p_cantidad", cantidad));
+                Cmd.Parameters.Add(new MySqlParameter("@p_area", area));
+                Cmd.Parameters.Add(new MySqlParameter("@p_lugar", lugar));
+                Cmd.Parameters.Add(new MySqlParameter("@p_motivo", motivo));
+                Cmd.Parameters.Add(new MySqlParameter("@p_userName", userName));
+                Cmd.Connection.Open();
+                int d = Cmd.ExecuteNonQuery();
+                Cmd.Connection.Close();
+                return d > 0;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        //vericar procedure
         public DataSet filtroUsuario(string nombre, string apellido, string tipo)
         {
             try

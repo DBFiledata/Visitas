@@ -183,6 +183,67 @@ namespace paginaOficial.viewsAdmin
 
 
 
+        // Alterna entre registro individual y visita grupal. En modo grupal el campo Nombre
+        // captura la entidad, se oculta cedula/QR/nacionalidad/foto y se pide la cantidad de
+        // personas; Area/Lugar/Motivo funcionan igual (el area queda habilitada de entrada, ya
+        // que no hay busqueda de persona que la habilite).
+        protected void rblModoVisita_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            bool grupal = rblModoVisita.SelectedValue == "grupal";
+
+            pnlCedula.Visible = !grupal;
+            pnlNacionalidad.Visible = !grupal;
+            pnlCantidad.Visible = grupal;
+            Image1.Visible = !grupal;
+            Label4.Text = grupal ? "Empresa / Asociaci&oacute;n / Instituci&oacute;n" : "Nombre";
+
+            txtId.Text = "";
+            hfQrData.Value = "";
+            txtNombre.Text = "";
+            txtCantidad.Text = "";
+            RBtnNacionalidad.ClearSelection();
+
+            listTipoArea.ClearSelection();
+            listTipoArea.Enabled = grupal;
+            listMotivo.ClearSelection();
+            listMotivo.Enabled = false;
+            RadMultiSelect1.Items.Clear();
+            RadMultiSelect1.Enabled = false;
+            btnRegistrar.Visible = false;
+        }
+
+        private void RegistrarVisitaGrupal(int lugar)
+        {
+            string entidad = txtNombre.Text.Trim();
+            int cantidad;
+            if (entidad == string.Empty || !int.TryParse(txtCantidad.Text.Trim(), out cantidad) || cantidad < 1
+                || listTipoArea.SelectedIndex == 0 || listMotivo.SelectedIndex == 0 || lugar == 0)
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "showalert", "alert('Debe completar los campo requeridos (la cantidad de personas debe ser mayor a 0)');", true);
+                return;
+            }
+
+            odbusuario = new Controlers.BaseDatos();
+            if (odbusuario.crearVisitaGrupal(entidad, cantidad, Convert.ToInt32(listTipoArea.SelectedValue), lugar,
+                Convert.ToInt32(listMotivo.SelectedValue), ((string)Session["id_user"])))
+            {
+                txtNombre.Text = "";
+                txtCantidad.Text = "";
+                btnRegistrar.Visible = false;
+                listTipoArea.ClearSelection();
+                listTipoArea.Enabled = true;
+                listMotivo.ClearSelection();
+                listMotivo.Enabled = false;
+                RadMultiSelect1.Items.Clear();
+                RadMultiSelect1.Enabled = false;
+                ScriptManager.RegisterStartupScript(this, GetType(), "showalert", "alert('Visita grupal registrada satisfactoriamente');", true);
+            }
+            else
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "showalert", "alert('No se pudo registrar la visita grupal <br />-verifique si la informacion esta ingresada correctamente');", true);
+            }
+        }
+
         protected void btnRegistrar_Click(object sender, EventArgs e)
         {
             var selectedValues = RadMultiSelect1.Value;
@@ -192,6 +253,12 @@ namespace paginaOficial.viewsAdmin
                 string valor = Convert.ToString( value);
                 MultiSelectItem selectedItem = RadMultiSelect1.Items.FindChildByValue(valor);
                 Lugar = Convert.ToInt32(selectedItem.Value);
+            }
+
+                if (rblModoVisita.SelectedValue == "grupal")
+            {
+                RegistrarVisitaGrupal(Lugar);
+                return;
             }
 
                 if (txtId.Text != string.Empty & txtNombre.Text != string.Empty & listTipoArea.SelectedIndex != 0 &
