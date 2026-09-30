@@ -123,6 +123,7 @@ namespace paginaOficial.viewsAdmin
             string qrData = hfQrData.Value;
             hfQrData.Value = "";
             txtId.Text = txtId.Text.Trim();
+            pnlHistorial.Visible = false;
 
             odbusuario = new Controlers.BaseDatos();
             string[] datos = new string[7];
@@ -137,6 +138,7 @@ namespace paginaOficial.viewsAdmin
                     this.listTipoArea.Enabled = true;
                     this.btnFotoNew.Enabled = true;
                     this.btnFotoNew.Visible = true;
+                    CargarHistorial(txtId.Text);
                 }
                 else
                 {
@@ -155,6 +157,20 @@ namespace paginaOficial.viewsAdmin
             else
             {
                 ScriptManager.RegisterStartupScript(this, GetType(), "showalert", "alert('Debe completar el campo (cedula)');", true);
+            }
+        }
+
+        // Muestra el historial de visitas anteriores de la cedula solo si tiene alguna.
+        private void CargarHistorial(string cedula)
+        {
+            odbusuario = new Controlers.BaseDatos();
+            DataSet dsHistorial = odbusuario.historialVisitasPersona(cedula);
+            bool tieneVisitas = dsHistorial.Tables.Count > 0 && dsHistorial.Tables[0].Rows.Count > 0;
+            pnlHistorial.Visible = tieneVisitas;
+            if (tieneVisitas)
+            {
+                gvHistorialVisitas.DataSource = dsHistorial.Tables[0];
+                gvHistorialVisitas.DataBind();
             }
         }
 
@@ -195,6 +211,7 @@ namespace paginaOficial.viewsAdmin
             pnlNacionalidad.Visible = !grupal;
             pnlCantidad.Visible = grupal;
             Image1.Visible = !grupal;
+            pnlHistorial.Visible = false;
             Label4.Text = grupal ? "Empresa / Asociaci&oacute;n / Instituci&oacute;n" : "Nombre";
 
             txtId.Text = "";
@@ -280,6 +297,7 @@ namespace paginaOficial.viewsAdmin
                     this.RadMultiSelect1.Items.Clear();
                     this.btnFotoNew.Visible = false;
                     this.Image1.ImageUrl = "~/Content/img/control1.png";
+                    this.pnlHistorial.Visible = false;
 
                 }
                 else
@@ -376,6 +394,7 @@ namespace paginaOficial.viewsAdmin
                 this.PanelFotoRegistro.Enabled = false;
                 this.PanelInfoRegitro.Visible = false;
                 this.PanelInfoVisitante.Visible = true;
+                CargarHistorial(this.txtId.Text);
             }
         }
 
@@ -402,6 +421,7 @@ namespace paginaOficial.viewsAdmin
             this.RadMultiSelect1.Enabled = false;
             this.Image1.ImageUrl = "~/Content/img/control1.png";
 
+            this.pnlHistorial.Visible = false;
             this.PanelInfoVisitante.Visible = true;
             this.PanelInfoRegitro.Visible = false;
             this.PanelFotoRegistro.Enabled = false;

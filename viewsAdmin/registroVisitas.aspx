@@ -266,6 +266,16 @@
         </div>
     </asp:Panel>
 
+    <%-- Historial de visitas anteriores: solo se muestra si la persona buscada ya tiene visitas --%>
+    <asp:Panel ID="pnlHistorial" runat="server" Visible="false">
+        <div class="container py-1 pb-2">
+            <div class="col-md-12 bg-dark rounded p-3">
+                <h5 class="text-white text-center">Historial de visitas anteriores</h5>
+                <asp:GridView ID="gvHistorialVisitas" runat="server" CssClass="table table-striped table-dark table-bordered" Width="100%"></asp:GridView>
+            </div>
+        </div>
+    </asp:Panel>
+
 
     <asp:Panel ID="PanelInfoRegitro" runat="server" Visible="false">
         <div class="container py-1 pb-2 ">

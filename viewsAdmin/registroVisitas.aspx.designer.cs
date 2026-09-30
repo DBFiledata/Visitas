@@ -108,6 +108,16 @@ namespace paginaOficial.viewsAdmin
         protected global::System.Web.UI.WebControls.Panel pnlNacionalidad;
 
         /// <summary>
+        /// Control pnlHistorial.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Panel pnlHistorial;
+
+        /// <summary>
+        /// Control gvHistorialVisitas.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.GridView gvHistorialVisitas;
+
+        /// <summary>
         /// Control btnBuscarInfo.
         /// </summary>
         /// <remarks>
