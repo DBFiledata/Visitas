@@ -88,6 +88,11 @@ namespace paginaOficial.viewsAdmin
         protected global::System.Web.UI.WebControls.Panel pnlCedula;
 
         /// <summary>
+        /// Control pnlFoto.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Panel pnlFoto;
+
+        /// <summary>
         /// Control pnlCantidad.
         /// </summary>
         protected global::System.Web.UI.WebControls.Panel pnlCantidad;

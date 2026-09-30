@@ -1160,7 +1160,7 @@ namespace paginaOficial.Controlers
 
         }
 
-        public DataSet filtroVisitas(int area, int lugar, int motivo, string cedula, int numero, string desde, string hasta)
+        public DataSet filtroVisitas(int area, int lugar, int motivo, string cedula, string visitante, int numero, string desde, string hasta)
         {
             try
             {
@@ -1173,6 +1173,7 @@ namespace paginaOficial.Controlers
                 Cmd.Parameters.Add(new MySqlParameter("@lugar", lugar));
                 Cmd.Parameters.Add(new MySqlParameter("@motivo", motivo));
                 Cmd.Parameters.Add(new MySqlParameter("@cedula", cedula));
+                Cmd.Parameters.Add(new MySqlParameter("@visitante", visitante));
                 Cmd.Parameters.Add(new MySqlParameter("@numero", numero));
                 Cmd.Parameters.Add(new MySqlParameter("@desde", desde));
                 Cmd.Parameters.Add(new MySqlParameter("@hasta", hasta));

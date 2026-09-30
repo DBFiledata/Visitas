@@ -210,7 +210,7 @@ namespace paginaOficial.viewsAdmin
             pnlCedula.Visible = !grupal;
             pnlNacionalidad.Visible = !grupal;
             pnlCantidad.Visible = grupal;
-            Image1.Visible = !grupal;
+            pnlFoto.Visible = !grupal;
             pnlHistorial.Visible = false;
             Label4.Text = grupal ? "Empresa / Asociaci&oacute;n / Instituci&oacute;n" : "Nombre";
 

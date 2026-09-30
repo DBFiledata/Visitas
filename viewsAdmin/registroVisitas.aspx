@@ -146,120 +146,119 @@
     </script>
 
 
+    <style>
+        /* Radios en linea, con la altura de un form-control para alinearse con los inputs vecinos */
+        .radio-campo { display: flex; align-items: center; min-height: calc(1.5em + .75rem + 2px); }
+        .radio-campo input { margin-right: .35rem; }
+        .radio-campo label { margin: 0 1.25rem 0 0; cursor: pointer; font-weight: 500; }
+
+        /* Selector de modalidad como pestañas (los radios quedan ocultos, la etiqueta hace de pestaña) */
+        .tabs-modo { display: flex; margin-bottom: -1px; }
+        .tabs-modo input { position: absolute; opacity: 0; width: 0; height: 0; }
+        .tabs-modo label { margin: 0 .25rem 0 0; padding: .5rem 1.25rem; cursor: pointer; font-weight: 500; color: #007bff;
+            border: 1px solid transparent; border-radius: .25rem .25rem 0 0; }
+        .tabs-modo label:hover { border-color: #e9ecef #e9ecef #dee2e6; }
+        .tabs-modo input:checked + label { color: #495057; background-color: #fff; border-color: #dee2e6 #dee2e6 #fff; }
+        .tabs-modo input:focus-visible + label { outline: 2px solid #80bdff; }
+        .reg-section-title { text-transform: uppercase; letter-spacing: .05em; font-size: .8rem; color: #6c757d; border-bottom: 1px solid #dee2e6; padding-bottom: .35rem; margin-bottom: 1rem; }
+    </style>
     <asp:Panel ID="PanelInfoVisitante" runat="server">
-        <div class="container py-1 pb-2 ">
-            <div class="d-flex align-items-center justify-content-center">
-                <div class="col-md-12  bg-dark mt-2 pb-5 pt-5 rounded">
-                    <div class="row">
-                        <div class="col-md-12 mx-auto">
-                            <div class="card border-secondary">
-                                <div class="card-header">
-                                    <h3 class=" text-center">Registro de Visitas</h3>
-                                </div>
-                                <div class="card-body col-12 d-flex mb-2">
-                                    <div class=" col-6 mb-3">
-                                        <asp:Image ID="Image1" runat="server" ImageUrl="~/Content/img/control1.png" class="w-100 h-100" />
+        <div class="container py-2">
+            <div class="bg-dark rounded p-3">
+                <div class="card border-secondary shadow-sm">
+                    <div class="card-header pb-0 d-flex flex-wrap align-items-end justify-content-between">
+                        <h3 class="mb-2">Registro de Visitas</h3>
+                        <asp:RadioButtonList ID="rblModoVisita" runat="server" RepeatDirection="Horizontal" RepeatLayout="Flow" CssClass="tabs-modo"
+                            AutoPostBack="true" OnSelectedIndexChanged="rblModoVisita_SelectedIndexChanged">
+                            <asp:ListItem Value="individual" Selected="True">Individual</asp:ListItem>
+                            <asp:ListItem Value="grupal">Visita grupal</asp:ListItem>
+                        </asp:RadioButtonList>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
 
-                                        <asp:Button ID="btnFotoNew" runat="server" Text="📷" OnClick="btnFotoNew_Click" Visible="false"
-                                            ToolTip="Actualizar foto &#10;" />
-                                        <%--<asp:HiddenField ID="HiddenField1" runat="server"/>--%>
-                                    </div>
+                            <%-- Foto del visitante (solo registro individual) --%>
+                            <asp:Panel ID="pnlFoto" runat="server" CssClass="col-md-4 text-center mb-3">
+                                <asp:Image ID="Image1" runat="server" ImageUrl="~/Content/img/control1.png" CssClass="img-fluid rounded border" />
+                                <asp:Button ID="btnFotoNew" runat="server" Text="📷 Actualizar foto" CssClass="btn btn-outline-secondary btn-sm mt-2" OnClick="btnFotoNew_Click" Visible="false"
+                                    ToolTip="Actualizar foto &#10;" />
+                            </asp:Panel>
 
-                                    <div class="card-body col-6 mb-3">
-                                        <div class="form-group d-flex justify-content-center mt-n3">
-                                            <asp:RadioButtonList ID="rblModoVisita" runat="server" RepeatDirection="Horizontal" CellPadding="4"
-                                                AutoPostBack="true" OnSelectedIndexChanged="rblModoVisita_SelectedIndexChanged">
-                                                <asp:ListItem Value="individual" Selected="True">Individual</asp:ListItem>
-                                                <asp:ListItem Value="grupal">Visita grupal</asp:ListItem>
-                                            </asp:RadioButtonList>
-                                        </div>
-                                        <asp:Panel ID="pnlCedula" runat="server">
-                                        <div class="form-group d-flex align-items-center justify-content-center mt-n3">
-                                            <div class="form-group col-12">
-                                                <asp:Label ID="Label7" runat="server" Text="Label">Cedula</asp:Label>
-                                                <asp:TextBox ID="txtId" CssClass="form-control"
-                                                    ToolTip="Introdusca cedula  &#10;"
-                                                    placeholder="📇" runat="server">
-                                                </asp:TextBox>
-                                                <asp:HiddenField ID="hfQrData" runat="server" />
+                            <div class="col-md">
+
+                                <h6 class="reg-section-title">Datos del visitante</h6>
+
+                                <%-- Cedula + busqueda + QR (solo registro individual) --%>
+                                <asp:Panel ID="pnlCedula" runat="server">
+                                    <div class="form-group">
+                                        <asp:Label ID="Label7" runat="server" CssClass="font-weight-bold" AssociatedControlID="txtId" Text="Cedula"></asp:Label>
+                                        <div class="input-group">
+                                            <asp:TextBox ID="txtId" CssClass="form-control" ToolTip="Introdusca cedula  &#10;" placeholder="📇 8-000-000" runat="server"></asp:TextBox>
+                                            <div class="input-group-append">
+                                                <asp:Button ID="btnBuscarInfo" CssClass="btn btn-success" runat="server" Text="🔎 Buscar"
+                                                    ToolTip="Buscar informacion &#10;" OnClick="btnBuscarInfo_Click" CausesValidation="false" />
+                                                <asp:Button ID="btnEscanearQR" CssClass="btn btn-primary" runat="server" Text="📷 QR"
+                                                    ToolTip="Escanear cédula por QR &#10;" OnClientClick="qrScan.start(); return false;" CausesValidation="false" />
+                                                <asp:Button ID="btnCancelarQR" CssClass="btn btn-danger" runat="server" Text="Cancelar ❌"
+                                                    ToolTip="Cancelar escaneo &#10;" OnClientClick="qrScan.stop(); return false;" CausesValidation="false"
+                                                    Style="display:none;" />
                                             </div>
                                         </div>
-                                        <div class="form-group d-flex justify-content-center mb-n2 mt-n2">
-                                            <asp:Button ID="btnBuscarInfo" CssClass="btn btn-success btn-lg" runat="server" Text="🔎"
-                                                ToolTip="Buscar informacion &#10;" OnClick="btnBuscarInfo_Click" CausesValidation="false" />
-                                            <asp:Button ID="btnEscanearQR" CssClass="btn btn-primary btn-lg ml-1" runat="server" Text="📷 QR"
-                                                ToolTip="Escanear cédula por QR &#10;" OnClientClick="qrScan.start(); return false;" CausesValidation="false" />
-                                            <asp:Button ID="btnCancelarQR" CssClass="btn btn-danger btn-lg ml-1" runat="server" Text="Cancelar ❌"
-                                                ToolTip="Cancelar escaneo &#10;" OnClientClick="qrScan.stop(); return false;" CausesValidation="false"
-                                                Style="display:none;" />
-                                        </div>
-
+                                        <asp:HiddenField ID="hfQrData" runat="server" />
+                                        <div id="qrScanError" class="text-danger small mt-1" style="display:none;"></div>
                                         <video id="qrScanVideo" autoplay playsinline muted style="display:none;"></video>
                                         <canvas id="qrScanCanvas" style="display:none;"></canvas>
-
-                                        <div class="form-group d-flex align-items-center justify-content-center mb-n2">
-                                            <div id="qrScanError" class="text-danger text-center small" style="display:none;"></div>
-                                        </div>
-                                        </asp:Panel>
-
-                                        <div class="form-group d-flex align-items-center justify-content-center mb-n2">
-                                            <div class="form-group col-12">
-                                                <asp:Label ID="Label4" runat="server" Text="Label">Nombre</asp:Label>
-                                                <asp:TextBox ID="txtNombre" CssClass="form-control mt-2" placeholder="📝" runat="server"></asp:TextBox>
-                                                <asp:Panel ID="pnlCantidad" runat="server" Visible="false">
-                                                    <asp:Label ID="lblCantidad" runat="server" Text="Cantidad de personas"></asp:Label>
-                                                    <asp:TextBox ID="txtCantidad" CssClass="form-control mt-2" placeholder="👥" runat="server" TextMode="Number" min="1"></asp:TextBox>
-                                                </asp:Panel>
-                                                <asp:Panel ID="pnlNacionalidad" runat="server">
-                                                <asp:Label ID="Label2" runat="server" Text="Label">Nacionalidad</asp:Label>
-                                                <asp:RadioButtonList ID="RBtnNacionalidad" runat="server" RepeatDirection="Horizontal" CellPadding="2">
-                                                    <asp:ListItem>Panameña</asp:ListItem>
-                                                    <asp:ListItem>Extranjera</asp:ListItem>
-                                                </asp:RadioButtonList>
-                                                </asp:Panel>
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group pl-3">
-                                            <asp:Label ID="Label12" runat="server" Text="Label">Area de visita</asp:Label>
-                                            <asp:DropDownList ID="listTipoArea" CssClass="form-control" ToolTip="Motivo el area de visita" runat="server" Width="98%" Enabled="false" AutoPostBack="true" OnSelectedIndexChanged="listTipoAreaSelected">
-                                                <asp:ListItem Value="0">📝 Seleccionar</asp:ListItem>
-                                            </asp:DropDownList>
-                                        </div>
-
-                                        <div class="form-group pl-3">
-                                            <asp:Label ID="Label6" runat="server" Text="Label">Lugar de visita</asp:Label>
-                                            <telerik:radmultiselect ID="RadMultiSelect1" Width="98.5%" Height="45px" runat="server" DataTextField="nombre" Enabled="false" DataValueField="idtypeOfPlaces"  MaxSelectedItems="1" AutoPostBack="true" OnSelectionChanged="listTipoSelect">
-                                            </telerik:radmultiselect>
-
-                                        </div>
-
-                                        <div class="form-group pl-3">
-                                            <asp:Label ID="Label1" runat="server" Text="Label">Motivo</asp:Label>
-                                            <asp:DropDownList ID="listMotivo" CssClass="form-control" ToolTip="Escoja el motivo de visita" runat="server" Width="98%" Enabled="false" AutoPostBack="true" OnSelectedIndexChanged="listMotivoSelected">
-                                                <asp:ListItem Value="0">📝 Seleccionar</asp:ListItem>
-                                            </asp:DropDownList>
-                                        </div>
-                                        
-                                        
-                                        <div class="form-group d-flex align-items-center justify-content-center">
-                                            <asp:Button ID="btnRegistrar" CssClass="btn btn-success btn-lg float-right mr-1" runat="server" Text="Registrar ✔" OnClick="btnRegistrar_Click" Visible="false" />
-                                            
-                                        </div>
                                     </div>
-                                    
+                                </asp:Panel>
 
-                                    <div class="form-group d-flex align-items-center justify-content-center">
-                                        <asp:Label ID="Label17" runat="server" Text="" Visiblefalse="false" ForeColor="Red"></asp:Label>
+                                <div class="form-row">
+                                    <div class="form-group col-md-7">
+                                        <asp:Label ID="Label4" runat="server" CssClass="font-weight-bold" AssociatedControlID="txtNombre" Text="Nombre"></asp:Label>
+                                        <asp:TextBox ID="txtNombre" CssClass="form-control" placeholder="📝" runat="server"></asp:TextBox>
                                     </div>
+                                    <%-- Solo visita grupal --%>
+                                    <asp:Panel ID="pnlCantidad" runat="server" Visible="false" CssClass="form-group col-md-5">
+                                        <asp:Label ID="lblCantidad" runat="server" CssClass="font-weight-bold" AssociatedControlID="txtCantidad" Text="Cantidad de personas"></asp:Label>
+                                        <asp:TextBox ID="txtCantidad" CssClass="form-control" placeholder="👥" runat="server" TextMode="Number" min="1"></asp:TextBox>
+                                    </asp:Panel>
+                                    <%-- Solo registro individual --%>
+                                    <asp:Panel ID="pnlNacionalidad" runat="server" CssClass="form-group col-md-5">
+                                        <asp:Label ID="Label2" runat="server" CssClass="font-weight-bold d-block mb-2" Text="Nacionalidad"></asp:Label>
+                                        <asp:RadioButtonList ID="RBtnNacionalidad" runat="server" RepeatDirection="Horizontal" RepeatLayout="Flow" CssClass="radio-campo">
+                                            <asp:ListItem>Panameña</asp:ListItem>
+                                            <asp:ListItem>Extranjera</asp:ListItem>
+                                        </asp:RadioButtonList>
+                                    </asp:Panel>
+                                </div>
 
-                                    <div class="form-group d-flex align-items-center justify-content-center">
-                                        
+                                <h6 class="reg-section-title mt-2">Destino de la visita</h6>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <asp:Label ID="Label12" runat="server" CssClass="font-weight-bold" AssociatedControlID="listTipoArea" Text="Area de visita"></asp:Label>
+                                        <asp:DropDownList ID="listTipoArea" CssClass="form-control" ToolTip="Motivo el area de visita" runat="server" Enabled="false" AutoPostBack="true" OnSelectedIndexChanged="listTipoAreaSelected">
+                                            <asp:ListItem Value="0">📝 Seleccionar</asp:ListItem>
+                                        </asp:DropDownList>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <asp:Label ID="Label6" runat="server" CssClass="font-weight-bold d-block mb-2" Text="Lugar de visita"></asp:Label>
+                                        <telerik:radmultiselect ID="RadMultiSelect1" Width="100%" Height="38px" runat="server" DataTextField="nombre" Enabled="false" DataValueField="idtypeOfPlaces" MaxSelectedItems="1" AutoPostBack="true" OnSelectionChanged="listTipoSelect">
+                                        </telerik:radmultiselect>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <asp:Label ID="Label1" runat="server" CssClass="font-weight-bold" AssociatedControlID="listMotivo" Text="Motivo"></asp:Label>
+                                        <asp:DropDownList ID="listMotivo" CssClass="form-control" ToolTip="Escoja el motivo de visita" runat="server" Enabled="false" AutoPostBack="true" OnSelectedIndexChanged="listMotivoSelected">
+                                            <asp:ListItem Value="0">📝 Seleccionar</asp:ListItem>
+                                        </asp:DropDownList>
                                     </div>
                                 </div>
 
+                                <asp:Label ID="Label17" runat="server" Text="" Visible="false" ForeColor="Red"></asp:Label>
                             </div>
                         </div>
+                    </div>
+                    <div class="card-footer text-right">
+                        <asp:Button ID="btnRegistrar" CssClass="btn btn-success btn-lg" runat="server" Text="Registrar ✔" OnClick="btnRegistrar_Click" Visible="false" />
                     </div>
                 </div>
             </div>
@@ -278,53 +277,50 @@
 
 
     <asp:Panel ID="PanelInfoRegitro" runat="server" Visible="false">
-        <div class="container py-1 pb-2 ">
-            <div class="d-flex align-items-center justify-content-center">
-                <div class="col-md-12  bg-dark mt-2 pb-5 pt-5 rounded">
-                    <div class="row">
-                        <div class="col-md-12 mx-auto">
-                            <div class="card border-secondary ">
-                                <div class="card-header">
-                                    <h3 class=" text-center">Registro de datos</h3>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <div class="card-body mt-n3 col-8">
-                                        <div class="form-group">
-                                            <asp:Label ID="Label3" runat="server" Text="Label">Cedula:</asp:Label>
-                                            <asp:TextBox ID="txtCedulaCrear" CssClass="form-control text-center" runat="server"></asp:TextBox>
-                                        </div>
-                                        <div class="form-group">
-                                            <asp:Label ID="Label5" runat="server" Text="Label">Nombre Compreto:</asp:Label>
-                                            <asp:TextBox ID="txtNombreCrear" CssClass="form-control text-center" runat="server"></asp:TextBox>
-                                        </div>
-                                        <div class="form-group">
-                                            <asp:Label ID="Label8" runat="server" Text="Label">Nacionalidad</asp:Label>
-                                            <asp:RadioButtonList ID="RBtnNacionalidadCrear" runat="server" RepeatDirection="Horizontal" CellPadding="2">
-                                                <asp:ListItem>Panameña</asp:ListItem>
-                                                <asp:ListItem>Extranjera</asp:ListItem>
-                                            </asp:RadioButtonList>
-                                            <asp:Label ID="Label11" runat="server" Text="Label">Sexo</asp:Label>
-                                            <asp:RadioButtonList ID="RbtnSexoCrear" runat="server" RepeatDirection="Horizontal" CellPadding="2">
-                                                <asp:ListItem>M</asp:ListItem>
-                                                <asp:ListItem>F</asp:ListItem>
-                                            </asp:RadioButtonList>
-                                        </div>
-                                        <div class="form-group">
-                                            <asp:Label ID="Label9" runat="server" Text="Label">Fecha de nacimiento:</asp:Label>
-                                            <asp:TextBox ID="txtNacimientoCrear" runat="server" CssClass="form-control text-center" Text="Label" TextMode="Date"></asp:TextBox>
-                                        </div>
-                                        <div class="form-group d-flex align-items-center justify-content-center">
-                                            <asp:Button ID="btnRegresarInfo" class="btn btn-primary mr-1" runat="server" Text="◀" OnClick="btnRegresarInfo_Click" ToolTip="Regresar  &#10;" />
-                                            <asp:Button ID="btnCrearDatos" class="btn btn-primary ml-1" runat="server" Text="▶" OnClick="btnCrearDatos_Click" ToolTip="Siguiente  &#10;" />
-                                            <%--OnClick="btnCrearDatos_Click"--%>
-                                        </div>
-                                    </div>
-                                    <div class="form-group d-flex align-items-center justify-content-center">
-                                        <asp:Label ID="Label14" runat="server" Text="" Visiblefalse="false" ForeColor="Red"></asp:Label>
-                                    </div>
-                                </div>
+        <div class="container py-2">
+            <div class="bg-dark rounded p-3">
+                <div class="card border-secondary shadow-sm">
+                    <div class="card-header">
+                        <h3 class="mb-0">Registro de datos</h3>
+                        <small class="text-muted">Visitante nuevo: complete sus datos personales</small>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="reg-section-title">Datos personales</h6>
+                        <div class="form-row">
+                            <div class="form-group col-md-5">
+                                <asp:Label ID="Label3" runat="server" CssClass="font-weight-bold" AssociatedControlID="txtCedulaCrear" Text="Cedula"></asp:Label>
+                                <asp:TextBox ID="txtCedulaCrear" CssClass="form-control" runat="server"></asp:TextBox>
+                            </div>
+                            <div class="form-group col-md-7">
+                                <asp:Label ID="Label5" runat="server" CssClass="font-weight-bold" AssociatedControlID="txtNombreCrear" Text="Nombre completo"></asp:Label>
+                                <asp:TextBox ID="txtNombreCrear" CssClass="form-control" runat="server"></asp:TextBox>
                             </div>
                         </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <asp:Label ID="Label8" runat="server" CssClass="font-weight-bold d-block mb-2" Text="Nacionalidad"></asp:Label>
+                                <asp:RadioButtonList ID="RBtnNacionalidadCrear" runat="server" RepeatDirection="Horizontal" RepeatLayout="Flow" CssClass="radio-campo">
+                                    <asp:ListItem>Panameña</asp:ListItem>
+                                    <asp:ListItem>Extranjera</asp:ListItem>
+                                </asp:RadioButtonList>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <asp:Label ID="Label11" runat="server" CssClass="font-weight-bold d-block mb-2" Text="Sexo"></asp:Label>
+                                <asp:RadioButtonList ID="RbtnSexoCrear" runat="server" RepeatDirection="Horizontal" RepeatLayout="Flow" CssClass="radio-campo">
+                                    <asp:ListItem>M</asp:ListItem>
+                                    <asp:ListItem>F</asp:ListItem>
+                                </asp:RadioButtonList>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <asp:Label ID="Label9" runat="server" CssClass="font-weight-bold" AssociatedControlID="txtNacimientoCrear" Text="Fecha de nacimiento"></asp:Label>
+                                <asp:TextBox ID="txtNacimientoCrear" runat="server" CssClass="form-control" TextMode="Date"></asp:TextBox>
+                            </div>
+                        </div>
+                        <asp:Label ID="Label14" runat="server" Text="" Visible="false" ForeColor="Red"></asp:Label>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <asp:Button ID="btnRegresarInfo" CssClass="btn btn-outline-secondary" runat="server" Text="◀ Regresar" OnClick="btnRegresarInfo_Click" ToolTip="Regresar  &#10;" />
+                        <asp:Button ID="btnCrearDatos" CssClass="btn btn-success" runat="server" Text="Guardar y continuar ▶" OnClick="btnCrearDatos_Click" ToolTip="Siguiente  &#10;" />
                     </div>
                 </div>
             </div>
@@ -332,48 +328,31 @@
     </asp:Panel>
 
     <asp:Panel ID="PanelFotoRegistro" runat="server" Visible="false" Enabled="false">
-        <div class="container py-1 pb-2 ">
-            <div class="d-flex align-items-center justify-content-center">
-                <div class="col-md-12  bg-dark mt-2 pb-5 pt-5 rounded">
-                    <div class="row">
-                        <div class="col-md-12 mx-auto">
-                            <div class="card border-secondary">
-                                <div class="card-header">
-                                    <h3 class=" text-center">Captura de Foto</h3>
-                                </div>
-                                <div class="card-body col-12 d-flex">
-                                    <div class=" col-6">
-                                        <h5 class=" text-center">Imagen en vivo</h5>
-                                        <%--contenedor de camara en vivo--%>
-                                        <asp:HiddenField ID="blobImg" runat="server" />
-                                        <video id="toPick" autoplay class="w-100 h-100">
-                                        </video>
-
-                                        <%--<button id="btnFoto" onclick="TomarFoto()"></button>--%>
-                                    </div>
-
-                                    <div class="card-body col-6">
-                                        <h5 class=" text-center">Foto</h5>
-                                        <asp:Image ID="imgFoto" runat="server" class="w-100 h-100" />
-
-                                    </div>
-
-                                </div>
-
-                                <div class="form-group d-flex align-items-center justify-content-center">
-                                    <asp:Button ID="btnCancelarFoto" CssClass="btn btn-danger btn-lg float-right mr-1" runat="server" Text="Cancelar ❌" OnClick="btnCancelarFoto_Click" />
-                                    <asp:Button ID="btnFoto" Text="📷" class="btn btn-primary btn-lg mr-1" runat="server" OnClientClick="TomarFoto(); return false;" />
-                                    <%--<asp:Panel ID="saveFoto" runat="server" Style="display: none;">
-
-                                        <asp:Button ID="BtnGuardarFoto" CssClass="btn btn-success btn-lg float-right mr-1" runat="server" Text="Guardar ✔" OnClick="BtnGuardarFoto_Click" />
-                                    </asp:Panel>--%>
-
-                                    <div ID="saveFoto" Style="display: none;">
-                                        <asp:Button ID="BtnGuardarFoto" CssClass="btn btn-success btn-lg float-right mr-1" runat="server" Text="Guardar ✔" OnClick="BtnGuardarFoto_Click" />
-                                    </div>
-
-                                </div>
+        <div class="container py-2">
+            <div class="bg-dark rounded p-3">
+                <div class="card border-secondary shadow-sm">
+                    <div class="card-header">
+                        <h3 class="mb-0">Captura de Foto</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h6 class="reg-section-title">Imagen en vivo</h6>
+                                <%--contenedor de camara en vivo--%>
+                                <asp:HiddenField ID="blobImg" runat="server" />
+                                <video id="toPick" autoplay class="w-100 rounded border"></video>
                             </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="reg-section-title">Foto</h6>
+                                <asp:Image ID="imgFoto" runat="server" CssClass="w-100 rounded border" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex flex-wrap justify-content-center align-items-center">
+                        <asp:Button ID="btnCancelarFoto" CssClass="btn btn-danger btn-lg mr-2" runat="server" Text="Cancelar ❌" OnClick="btnCancelarFoto_Click" />
+                        <asp:Button ID="btnFoto" Text="📷 Tomar foto" CssClass="btn btn-primary btn-lg mr-2" runat="server" OnClientClick="TomarFoto(); return false;" />
+                        <div id="saveFoto" style="display: none;">
+                            <asp:Button ID="BtnGuardarFoto" CssClass="btn btn-success btn-lg" runat="server" Text="Guardar ✔" OnClick="BtnGuardarFoto_Click" />
                         </div>
                     </div>
                 </div>
