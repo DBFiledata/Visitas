@@ -80,6 +80,21 @@
                     });
             },
 
+            // La cedula codifica el texto en ISO-8859-1 (Á=193, Ñ=209), no UTF-8: jsQR asume UTF-8
+            // en code.data y lo mutila. Se decodifica desde los bytes crudos: UTF-8 estricto si es
+            // valido, y si no Latin-1 (cada byte es directamente un code point).
+            decode: function (code) {
+                var bytes = code.binaryData;
+                if (!bytes || !bytes.length) return code.data;
+                try {
+                    return new TextDecoder('utf-8', { fatal: true }).decode(new Uint8Array(bytes));
+                } catch (e) {
+                    var s = '';
+                    for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+                    return s;
+                }
+            },
+
             tick: function () {
                 var self = this;
 
@@ -92,7 +107,11 @@
                     var code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
 
                     if (code && code.data) {
-                        document.getElementById('<%= txtId.ClientID %>').value = code.data;
+                        var qrText = this.decode(code);
+                        // El QR trae "cedula|nombres|apellidos||sexo|pais|AAAAMMDD|nacionalidad|...":
+                        // la cedula va al campo, la cadena completa la parsea el servidor.
+                        document.getElementById('<%= hfQrData.ClientID %>').value = qrText;
+                        document.getElementById('<%= txtId.ClientID %>').value = qrText.split('|')[0].trim();
                         this.stop();
                         document.getElementById('<%= btnBuscarInfo.ClientID %>').click();
                         return;
@@ -154,6 +173,7 @@
                                                     ToolTip="Introdusca cedula  &#10;"
                                                     placeholder="📇" runat="server">
                                                 </asp:TextBox>
+                                                <asp:HiddenField ID="hfQrData" runat="server" />
                                             </div>
                                         </div>
                                         <div class="form-group d-flex justify-content-center mb-n2 mt-n2">
@@ -246,7 +266,7 @@
                                     <div class="card-body mt-n3 col-8">
                                         <div class="form-group">
                                             <asp:Label ID="Label3" runat="server" Text="Label">Cedula:</asp:Label>
-                                            <asp:TextBox ID="txtCedulaCrear" CssClass="form-control text-center" runat="server" Enabled="false"></asp:TextBox>
+                                            <asp:TextBox ID="txtCedulaCrear" CssClass="form-control text-center" runat="server"></asp:TextBox>
                                         </div>
                                         <div class="form-group">
                                             <asp:Label ID="Label5" runat="server" Text="Label">Nombre Compreto:</asp:Label>

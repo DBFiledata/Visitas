@@ -9,6 +9,7 @@ using System.Web.Services;
 using System.Net;
 using Telerik.Windows.Documents.Core.Imaging.Jpeg.Encoder;
 using System.Data;
+using System.Globalization;
 using Telerik.Web.UI;
 
 namespace paginaOficial.viewsAdmin
@@ -118,6 +119,11 @@ namespace paginaOficial.viewsAdmin
 
         protected void btnBuscarInfo_Click(object sender, EventArgs e)
         {
+            // Cadena cruda del QR (vacia si la cedula se tipeo a mano); se consume una sola vez.
+            string qrData = hfQrData.Value;
+            hfQrData.Value = "";
+            txtId.Text = txtId.Text.Trim();
+
             odbusuario = new Controlers.BaseDatos();
             string[] datos = new string[7];
             datos = odbusuario.infoVisitante(this.txtId.Text);
@@ -134,33 +140,45 @@ namespace paginaOficial.viewsAdmin
                 }
                 else
                 {
-                    odbusuario = new Controlers.BaseDatos();
-                    datos = odbusuario.infoPadron(this.txtId.Text);
-                    if (datos != null)
-                    {
-                        this.txtNombre.Text = datos[0];
-                        this.RBtnNacionalidad.SelectedValue = datos[2];
-                        this.PanelFotoRegistro.Visible = true;
-                        this.PanelFotoRegistro.Enabled = true;
-                        this.PanelInfoVisitante.Visible = false;
-                        RadMultiSelect1.Enable = false;
-                    }
-
-                    else
-                    {
-                        this.PanelInfoVisitante.Visible = false;
-                        this.PanelFotoRegistro.Visible = false;
-                        this.PanelFotoRegistro.Enabled = false;
-                        this.PanelInfoRegitro.Visible = true;
-                        this.txtCedulaCrear.Text = txtId.Text;
-                        RadMultiSelect1.Enable = false;
-                    }
+                    // Visitante nuevo: siempre pasa por el alta (prellenada desde el QR si lo hay).
+                    // No se consulta el padron: esa rama saltaba a la foto sin insertar en persons,
+                    // y el flujo quedaba trabado al volver al panel principal.
+                    this.PanelInfoVisitante.Visible = false;
+                    this.PanelFotoRegistro.Visible = false;
+                    this.PanelFotoRegistro.Enabled = false;
+                    this.PanelInfoRegitro.Visible = true;
+                    this.txtCedulaCrear.Text = txtId.Text;
+                    PrellenarRegistroDesdeQr(qrData);
+                    RadMultiSelect1.Enable = false;
                 }
             }
             else
             {
                 ScriptManager.RegisterStartupScript(this, GetType(), "showalert", "alert('Debe completar el campo (cedula)');", true);
             }
+        }
+
+        // Formato del QR de la cedula:
+        // cedula|nombres|apellidos||sexo|pais|AAAAMMDD|nacionalidad|...
+        // Si la cadena no tiene ese formato (ej. un QR con solo la cedula) no prellena nada.
+        private void PrellenarRegistroDesdeQr(string qrData)
+        {
+            if (string.IsNullOrEmpty(qrData)) return;
+            string[] partes = qrData.Split('|');
+            if (partes.Length < 8) return;
+
+            txtNombreCrear.Text = (partes[1].Trim() + " " + partes[2].Trim()).Trim();
+
+            string sexo = partes[4].Trim().ToUpper();
+            if (RbtnSexoCrear.Items.FindByValue(sexo) != null)
+                RbtnSexoCrear.SelectedValue = sexo;
+
+            DateTime nacimiento;
+            string fecha = partes[6].Trim().Replace("/", "").Replace("-", "");
+            if (DateTime.TryParseExact(fecha, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out nacimiento))
+                txtNacimientoCrear.Text = nacimiento.ToString("yyyy-MM-dd");
+
+            RBtnNacionalidadCrear.SelectedValue = partes[7].Trim().ToUpper().StartsWith("PANAME") ? "Panameña" : "Extranjera";
         }
 
 
@@ -213,8 +231,11 @@ namespace paginaOficial.viewsAdmin
             odbusuario = new Controlers.BaseDatos();
             if (txtCedulaCrear.Text != string.Empty & txtNombreCrear.Text != string.Empty & txtNacimientoCrear.Text != string.Empty & RBtnNacionalidadCrear.SelectedValue != null & RbtnSexoCrear.SelectedValue != null)
             {
-                if (odbusuario.registroPersons(txtCedulaCrear.Text, txtNombreCrear.Text, RBtnNacionalidadCrear.SelectedValue, txtNacimientoCrear.Text, RbtnSexoCrear.SelectedValue))
+                if (odbusuario.registroPersons(txtCedulaCrear.Text.Trim(), txtNombreCrear.Text, RBtnNacionalidadCrear.SelectedValue, txtNacimientoCrear.Text, RbtnSexoCrear.SelectedValue))
                 {
+                    // La cedula ahora es editable en el alta: la foto y la vuelta al panel
+                    // principal usan txtId, asi que se sincroniza con lo que realmente se guardo.
+                    txtId.Text = txtCedulaCrear.Text.Trim();
                     txtCedulaCrear.Text = "";
                     txtNombreCrear.Text = "";
                     txtNacimientoCrear.Text = "";
