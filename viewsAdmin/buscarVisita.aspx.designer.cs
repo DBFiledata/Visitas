@@ -141,6 +141,11 @@ namespace paginaOficial.viewsAdmin
         protected global::System.Web.UI.WebControls.TextBox txtCedula;
 
         /// <summary>
+        /// Control txtVisitante.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.TextBox txtVisitante;
+
+        /// <summary>
         /// Control btnfiltrar.
         /// </summary>
         /// <remarks>

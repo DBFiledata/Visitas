@@ -56,8 +56,9 @@ namespace paginaOficial.viewsAdmin
         /// como por el export a Excel, evitando duplicar la logica en ambos handlers.
         /// Devuelve false (y muestra un alert) si el rango de fechas es invalido.
         /// </summary>
-        private bool LeerFiltros(out int area, out int lugar, out int motivo, out string cedula, out int numero, out string desde, out string hasta)
+        private bool LeerFiltros(out int area, out int lugar, out int motivo, out string cedula, out string visitante, out int numero, out string desde, out string hasta)
         {
+            visitante = txtVisitante.Text.Trim();
             if (listTipo.SelectedIndex > 0)
             {
                 area = Convert.ToInt32(listTipo.SelectedValue);
@@ -124,14 +125,14 @@ namespace paginaOficial.viewsAdmin
         {
             odbusuario = new Controlers.BaseDatos();
             int area, lugar, motivo, numero;
-            string cedula, desde, hasta;
+            string cedula, visitante, desde, hasta;
 
-            if (!LeerFiltros(out area, out lugar, out motivo, out cedula, out numero, out desde, out hasta))
+            if (!LeerFiltros(out area, out lugar, out motivo, out cedula, out visitante, out numero, out desde, out hasta))
             {
                 return;
             }
 
-            DataSet ds = odbusuario.filtroVisitas(area, lugar, motivo, cedula, numero, desde, hasta);
+            DataSet ds = odbusuario.filtroVisitas(area, lugar, motivo, cedula, visitante, numero, desde, hasta);
             this.GridView1.DataSource = ds.Tables[0];
             this.GridView1.DataBind();
         }
@@ -140,15 +141,15 @@ namespace paginaOficial.viewsAdmin
         {
             odbusuario = new Controlers.BaseDatos();
             int area, lugar, motivo, numero;
-            string cedula, desde, hasta;
+            string cedula, visitante, desde, hasta;
 
-            if (!LeerFiltros(out area, out lugar, out motivo, out cedula, out numero, out desde, out hasta))
+            if (!LeerFiltros(out area, out lugar, out motivo, out cedula, out visitante, out numero, out desde, out hasta))
             {
                 return;
             }
 
             //exportacion a exel
-            DataSet ds = odbusuario.filtroVisitas(area, lugar, motivo, cedula, numero, desde, hasta);
+            DataSet ds = odbusuario.filtroVisitas(area, lugar, motivo, cedula, visitante, numero, desde, hasta);
             var grid = new GridView();
             grid.DataSource = ds.Tables[0];
             grid.DataBind();

@@ -24,31 +24,57 @@
     </div>
     <div class="card-body">
         <div class="card-header bg-light">
-            <asp:Label ID="Label6" runat="server" Text="Label">Area</asp:Label>
-            <asp:DropDownList ID="listTipo" CssClass="active" ToolTip="Escoja el area de visita" runat="server" AutoPostBack="true" OnSelectedIndexChanged="listTipoAreaSelected">
-                <asp:ListItem Value="0">📝 Seleccionar</asp:ListItem>
-            </asp:DropDownList>
-            <asp:Label ID="Label9" runat="server" Text="Label">Lugar</asp:Label>
-            <asp:DropDownList ID="listLugar" CssClass="active" ToolTip="Escoja el lugar de visita" runat="server" Enabled="false">
-                <asp:ListItem Value="0">📝 Seleccionar</asp:ListItem>
-            </asp:DropDownList>
-            <asp:Label ID="Label7" runat="server" Text="Label">Desde</asp:Label>
-            <asp:TextBox ID="txtDesde" CssClass="active" runat="server" ToolTip="📅 inicio de rango de busqueda" TextMode="Date"></asp:TextBox>
-            <asp:Label ID="Label8" runat="server" Text="Label">Hasta</asp:Label>
-            <asp:TextBox ID="TxtHasta" CssClass="active" runat="server" ToolTip="📅 final de rago de busqueda" TextMode="Date"></asp:TextBox>
-            <asp:Label ID="Label1" runat="server" Text="Label">#Visita</asp:Label>
-            <asp:TextBox ID="txtNumero" CssClass="active" runat="server"></asp:TextBox>
-            <asp:Label ID="Label10" runat="server" Text="Label">Motivo</asp:Label>
-            <asp:DropDownList ID="listMotivo" CssClass="active" ToolTip="Escoja el motivo de visita" runat="server">
-                <asp:ListItem Value="0">📝 Seleccionar</asp:ListItem>
-            </asp:DropDownList>
-            <asp:Label ID="Label12" runat="server" Text="Label">Cedula</asp:Label>
-            <asp:TextBox ID="txtCedula" CssClass="active" runat="server" ToolTip="Cedula del visitante"></asp:TextBox>
-            <asp:Button ID="btnfiltrar" CssClass="btn btn-success btn-lg  mr-1" ToolTip="Aplicar Filtro" runat="server" Text="🔎" OnClick="btnfiltrar_Click" />
-            <asp:Button ID="btnReporte" CssClass="btn btn-primary btn-lg  mr-1" ToolTip="Generar Reporte" runat="server" Text="📥" OnClick="btnReporte_Click" />
-
-
-
+            <%-- Fila 1: donde fue la visita --%>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <asp:Label ID="Label6" runat="server" CssClass="font-weight-bold" AssociatedControlID="listTipo" Text="Area"></asp:Label>
+                    <asp:DropDownList ID="listTipo" CssClass="form-control" ToolTip="Escoja el area de visita" runat="server" AutoPostBack="true" OnSelectedIndexChanged="listTipoAreaSelected">
+                        <asp:ListItem Value="0">📝 Seleccionar</asp:ListItem>
+                    </asp:DropDownList>
+                </div>
+                <div class="form-group col-md-4">
+                    <asp:Label ID="Label9" runat="server" CssClass="font-weight-bold" AssociatedControlID="listLugar" Text="Lugar"></asp:Label>
+                    <asp:DropDownList ID="listLugar" CssClass="form-control" ToolTip="Escoja el lugar de visita" runat="server" Enabled="false">
+                        <asp:ListItem Value="0">📝 Seleccionar</asp:ListItem>
+                    </asp:DropDownList>
+                </div>
+                <div class="form-group col-md-4">
+                    <asp:Label ID="Label10" runat="server" CssClass="font-weight-bold" AssociatedControlID="listMotivo" Text="Motivo"></asp:Label>
+                    <asp:DropDownList ID="listMotivo" CssClass="form-control" ToolTip="Escoja el motivo de visita" runat="server">
+                        <asp:ListItem Value="0">📝 Seleccionar</asp:ListItem>
+                    </asp:DropDownList>
+                </div>
+            </div>
+            <%-- Fila 2: quien visito y numero de visita --%>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <asp:Label ID="Label14" runat="server" CssClass="font-weight-bold" AssociatedControlID="txtVisitante" Text="Visitante"></asp:Label>
+                    <asp:TextBox ID="txtVisitante" CssClass="form-control" runat="server" ToolTip="Nombre del visitante (busqueda parcial)" placeholder="Nombre o apellido"></asp:TextBox>
+                </div>
+                <div class="form-group col-md-4">
+                    <asp:Label ID="Label12" runat="server" CssClass="font-weight-bold" AssociatedControlID="txtCedula" Text="Cedula"></asp:Label>
+                    <asp:TextBox ID="txtCedula" CssClass="form-control" runat="server" ToolTip="Cedula del visitante" placeholder="8-000-000"></asp:TextBox>
+                </div>
+                <div class="form-group col-md-4">
+                    <asp:Label ID="Label1" runat="server" CssClass="font-weight-bold" AssociatedControlID="txtNumero" Text="#Visita"></asp:Label>
+                    <asp:TextBox ID="txtNumero" CssClass="form-control" runat="server" placeholder="Numero de visita"></asp:TextBox>
+                </div>
+            </div>
+            <%-- Fila 3: rango de fechas y acciones --%>
+            <div class="form-row align-items-end">
+                <div class="form-group col-md-4">
+                    <asp:Label ID="Label7" runat="server" CssClass="font-weight-bold" AssociatedControlID="txtDesde" Text="Desde"></asp:Label>
+                    <asp:TextBox ID="txtDesde" CssClass="form-control" runat="server" ToolTip="📅 inicio de rango de busqueda" TextMode="Date"></asp:TextBox>
+                </div>
+                <div class="form-group col-md-4">
+                    <asp:Label ID="Label8" runat="server" CssClass="font-weight-bold" AssociatedControlID="TxtHasta" Text="Hasta"></asp:Label>
+                    <asp:TextBox ID="TxtHasta" CssClass="form-control" runat="server" ToolTip="📅 final de rango de busqueda" TextMode="Date"></asp:TextBox>
+                </div>
+                <div class="form-group col-md-4 text-md-right">
+                    <asp:Button ID="btnfiltrar" CssClass="btn btn-success btn-lg mr-1" ToolTip="Aplicar Filtro" runat="server" Text="🔎 Filtrar" OnClick="btnfiltrar_Click" />
+                    <asp:Button ID="btnReporte" CssClass="btn btn-primary btn-lg" ToolTip="Generar Reporte" runat="server" Text="📥 Reporte" OnClick="btnReporte_Click" />
+                </div>
+            </div>
         </div>
         <div class="form-group table-responsive">
             <div class="table-responsive">
