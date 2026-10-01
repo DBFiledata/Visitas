@@ -17,6 +17,20 @@
             $('#modalEliminar').modal('show');
         }
     </script>
+    <script type="text/javascript">
+        function openModalIncidente() {
+            $('#modalIncidente').modal('show');
+        }
+        function openModalQuitarIncidente() {
+            $('#modalQuitarIncidente').modal('show');
+        }
+    </script>
+    <style>
+        /* Visita en la que ocurrio el incidente (la tabla es oscura: se resalta con un rojo translucido) */
+        .table-dark tr.fila-incidente > td { background-color: rgba(220, 53, 69, .45) !important; }
+        /* Columnas auxiliares alertado/incidente: son siempre las dos ultimas de listaVisitas y filtroVisitas */
+        #<%= GridView1.ClientID %> th:nth-last-child(-n+2), #<%= GridView1.ClientID %> td:nth-last-child(-n+2) { display: none; }
+    </style>
 
 
     <div class="card-header bg-gradient-secondary">
@@ -78,18 +92,16 @@
         </div>
         <div class="form-group table-responsive">
             <div class="table-responsive">
-                <asp:GridView ID="GridView1" CssClass="table table-striped table-dark table-bordered" Width="100%" CellSpacing="0" runat="server" OnRowCommand="GridView1_RowCommand">
-                    <%--<Columns>
-                        <asp:TemplateField HeaderText="Manteniniento">
+                <asp:GridView ID="GridView1" CssClass="table table-striped table-dark table-bordered" Width="100%" CellSpacing="0" runat="server"
+                    OnRowCommand="GridView1_RowCommand" OnRowDataBound="GridView1_RowDataBound">
+                    <Columns>
+                        <%-- Boton de incidente: el texto, el comando y el argumento los define GridView1_RowDataBound --%>
+                        <asp:TemplateField HeaderText="Alerta">
                             <ItemTemplate>
-                                <asp:Button ID="Button1" CommandName="info" Text="👁‍🗨" CssClass="btn btn-link" ToolTip="Informacion detallada del usuario" runat="server" />
-
-                                <asp:Button ID="Button2" CommandName="editar" Text="📝" CssClass="btn btn-link" ToolTip="Editar informacion del usuario" runat="server" />
-
-                                <asp:Button ID="Button3" CommandName="eliminar" Text="🧺" CssClass="btn btn-link" ToolTip="Eliminar cuenta del usuario" runat="server" />
+                                <asp:Button ID="btnIncidente" Text="Marcar incidente" CssClass="btn btn-outline-warning btn-sm text-nowrap" runat="server" />
                             </ItemTemplate>
                         </asp:TemplateField>
-                    </Columns>--%>
+                    </Columns>
                 </asp:GridView>
             </div>
         </div>
@@ -205,6 +217,51 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <%-- Marcar incidente: deja al visitante como "alertado" y marca ESTA visita --%>
+    <div id="modalIncidente" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="tituloIncidente" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="tituloIncidente">Marcar incidente</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-2"><strong><asp:Label ID="lblIncidenteVisita" runat="server" Text=""></asp:Label></strong></p>
+                    <p class="text-muted small">El visitante quedará <strong>alertado</strong>: se avisará al personal cada vez que se registre una nueva visita suya, y esta visita quedará marcada en su historial.</p>
+                    <div class="form-group">
+                        <label class="font-weight-bold" for="<%= txtIncidente.ClientID %>">¿Qué ocurrió?</label>
+                        <asp:TextBox ID="txtIncidente" CssClass="form-control" TextMode="MultiLine" Rows="4" MaxLength="500" runat="server"></asp:TextBox>
+                    </div>
+                    <asp:Label ID="lblErrorIncidente" runat="server" Text="" CssClass="text-danger small d-block"></asp:Label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <asp:Button ID="btnGuardarIncidente" CssClass="btn btn-danger" runat="server" Text="Marcar y alertar" OnClick="btnGuardarIncidente_Click" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%-- Quitar la marca de incidente de una visita (se levanta la alerta si era el unico incidente activo) --%>
+    <div id="modalQuitarIncidente" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="tituloQuitarIncidente" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="tituloQuitarIncidente">Quitar alerta</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-2">¿Desea quitar la marca de incidente de esta visita?</p>
+                    <p class="mb-2"><strong><asp:Label ID="lblQuitarIncidenteVisita" runat="server" Text=""></asp:Label></strong></p>
+                    <p class="text-muted small mb-0">Si no tiene otros incidentes activos, el visitante dejará de estar alertado.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <asp:Button ID="btnConfirmarQuitarIncidente" CssClass="btn btn-warning" runat="server" Text="Quitar alerta" OnClick="btnConfirmarQuitarIncidente_Click" />
                 </div>
             </div>
         </div>

@@ -570,6 +570,67 @@ namespace paginaOficial.Controlers
             return ds;
         }
 
+        // Incidentes de visitantes (tabla visit_incidents, migracion 0010): marcar un incidente sobre una
+        // visita deja al visitante "alertado". La alerta se consulta por cedula.
+        public bool marcarIncidente(int visita, string descripcion, string userName)
+        {
+            try
+            {
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "marcarIncidente";
+                Cmd.Parameters.Add(new MySqlParameter("@p_visita", visita));
+                Cmd.Parameters.Add(new MySqlParameter("@p_descripcion", descripcion));
+                Cmd.Parameters.Add(new MySqlParameter("@p_userName", userName));
+                Cmd.Connection.Open();
+                int d = Cmd.ExecuteNonQuery();
+                Cmd.Connection.Close();
+                return d > 0;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public bool levantarIncidente(int visita)
+        {
+            try
+            {
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "levantarIncidente";
+                Cmd.Parameters.Add(new MySqlParameter("@p_visita", visita));
+                Cmd.Connection.Open();
+                int d = Cmd.ExecuteNonQuery();
+                Cmd.Connection.Close();
+                return d > 0;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        // Incidentes activos de una cedula (vacio = no alertado): columnas visita, descripcion, fecha.
+        public DataSet alertaVisitante(string cedula)
+        {
+            ds = new DataSet();
+            try
+            {
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "alertaVisitante";
+                Cmd.Parameters.Add(new MySqlParameter("@p_cedula", cedula));
+                Adap = new MySqlDataAdapter(Cmd);
+                Adap.Fill(ds);
+            }
+            catch (Exception e)
+            {
+            }
+            return ds;
+        }
+
         // Visita grupal (tabla group_visits, independiente de visits). area -> lugar_id (places),
         // lugar -> idtypeOfPlaces (typeofplaces), motivo -> idreasonsForVisits, igual que crearVisitas.
         public bool crearVisitaGrupal(string entidad, int cantidad, int area, int lugar, int motivo, string userName)

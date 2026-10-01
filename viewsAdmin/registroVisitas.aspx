@@ -160,8 +160,21 @@
         .tabs-modo label:hover { border-color: #e9ecef #e9ecef #dee2e6; }
         .tabs-modo input:checked + label { color: #495057; background-color: #fff; border-color: #dee2e6 #dee2e6 #fff; }
         .tabs-modo input:focus-visible + label { outline: 2px solid #80bdff; }
+        /* Visita del incidente en el historial del visitante */
+        .table-dark tr.fila-incidente > td { background-color: rgba(220, 53, 69, .45) !important; }
+        #<%= gvHistorialVisitas.ClientID %> th:nth-last-child(-n+2), #<%= gvHistorialVisitas.ClientID %> td:nth-last-child(-n+2) { display: none; }
         .reg-section-title { text-transform: uppercase; letter-spacing: .05em; font-size: .8rem; color: #6c757d; border-bottom: 1px solid #dee2e6; padding-bottom: .35rem; margin-bottom: 1rem; }
     </style>
+    <%-- Visitante alertado (incidente previo): se muestra al buscar la cedula --%>
+    <asp:Panel ID="pnlAlertado" runat="server" Visible="false">
+        <div class="container pt-2">
+            <div class="alert alert-danger shadow-sm mb-0" role="alert">
+                <h5 class="alert-heading mb-1">&#9888; Visitante alertado</h5>
+                <asp:Label ID="lblAlertado" runat="server" Text=""></asp:Label>
+            </div>
+        </div>
+    </asp:Panel>
+
     <asp:Panel ID="PanelInfoVisitante" runat="server">
         <div class="container py-2">
             <div class="bg-dark rounded p-3">
@@ -270,7 +283,7 @@
         <div class="container py-1 pb-2">
             <div class="col-md-12 bg-dark rounded p-3">
                 <h5 class="text-white text-center">Historial de visitas anteriores</h5>
-                <asp:GridView ID="gvHistorialVisitas" runat="server" CssClass="table table-striped table-dark table-bordered" Width="100%"></asp:GridView>
+                <asp:GridView ID="gvHistorialVisitas" runat="server" CssClass="table table-striped table-dark table-bordered" Width="100%" OnRowDataBound="gvHistorialVisitas_RowDataBound"></asp:GridView>
             </div>
         </div>
     </asp:Panel>

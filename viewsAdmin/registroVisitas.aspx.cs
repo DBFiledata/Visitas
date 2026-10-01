@@ -123,7 +123,7 @@ namespace paginaOficial.viewsAdmin
             string qrData = hfQrData.Value;
             hfQrData.Value = "";
             txtId.Text = txtId.Text.Trim();
-            pnlHistorial.Visible = false;
+            OcultarHistorial();
 
             odbusuario = new Controlers.BaseDatos();
             string[] datos = new string[7];
@@ -160,7 +160,14 @@ namespace paginaOficial.viewsAdmin
             }
         }
 
-        // Muestra el historial de visitas anteriores de la cedula solo si tiene alguna.
+        private void OcultarHistorial()
+        {
+            pnlHistorial.Visible = false;
+            pnlAlertado.Visible = false;
+        }
+
+        // Muestra el historial de visitas anteriores de la cedula solo si tiene alguna, y avisa si el
+        // visitante esta alertado (tiene un incidente registrado, ver migracion 0010).
         private void CargarHistorial(string cedula)
         {
             odbusuario = new Controlers.BaseDatos();
@@ -171,6 +178,49 @@ namespace paginaOficial.viewsAdmin
             {
                 gvHistorialVisitas.DataSource = dsHistorial.Tables[0];
                 gvHistorialVisitas.DataBind();
+            }
+
+            MostrarAlertaVisitante(cedula);
+        }
+
+        // Banner + alert del navegador cuando la cedula tiene incidentes activos.
+        private void MostrarAlertaVisitante(string cedula)
+        {
+            odbusuario = new Controlers.BaseDatos();
+            DataSet dsAlerta = odbusuario.alertaVisitante(cedula);
+            bool alertado = dsAlerta.Tables.Count > 0 && dsAlerta.Tables[0].Rows.Count > 0;
+            pnlAlertado.Visible = alertado;
+            if (!alertado) return;
+
+            DataTable incidentes = dsAlerta.Tables[0];
+            DataRow reciente = incidentes.Rows[0]; // el SP los devuelve del mas reciente al mas antiguo
+            string detalle = "Incidente en la visita #" + reciente["visita"] + " ("
+                + Convert.ToDateTime(reciente["fecha"]).ToString("dd/MM/yyyy") + "): " + reciente["descripcion"];
+            if (incidentes.Rows.Count > 1)
+            {
+                detalle += " (y " + (incidentes.Rows.Count - 1) + " incidente(s) anterior(es))";
+            }
+
+            lblAlertado.Text = Server.HtmlEncode(detalle);
+            ScriptManager.RegisterStartupScript(this, GetType(), "alertaVisitante",
+                "alert('" + HttpUtility.JavaScriptStringEncode("VISITANTE ALERTADO" + Environment.NewLine + Environment.NewLine + detalle) + "');", true);
+        }
+
+        // Historial del visitante: se marca SOLO la visita del incidente (fila resaltada + icono).
+        // Las columnas auxiliares incidente/nota_incidente (las dos ultimas del SP) se ocultan por CSS.
+        protected void gvHistorialVisitas_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if ((e.Row.RowType == DataControlRowType.DataRow) && (e.Row.DataItem is DataRowView))
+            {
+                DataRowView fila = (DataRowView)e.Row.DataItem;
+                if (!fila.DataView.Table.Columns.Contains("incidente") || Convert.ToInt32(fila["incidente"]) != 1)
+                {
+                    return;
+                }
+
+                e.Row.CssClass = "fila-incidente";
+                e.Row.ToolTip = "Incidente en esta visita: " + Convert.ToString(fila["nota_incidente"]);
+                e.Row.Cells[0].Text = "<span class=\"text-danger font-weight-bold\" title=\"Visita del incidente\">⚠</span> " + e.Row.Cells[0].Text;
             }
         }
 
@@ -211,7 +261,7 @@ namespace paginaOficial.viewsAdmin
             pnlNacionalidad.Visible = !grupal;
             pnlCantidad.Visible = grupal;
             pnlFoto.Visible = !grupal;
-            pnlHistorial.Visible = false;
+            OcultarHistorial();
             Label4.Text = grupal ? "Empresa / Asociaci&oacute;n / Instituci&oacute;n" : "Nombre";
 
             txtId.Text = "";
@@ -297,7 +347,7 @@ namespace paginaOficial.viewsAdmin
                     this.RadMultiSelect1.Items.Clear();
                     this.btnFotoNew.Visible = false;
                     this.Image1.ImageUrl = "~/Content/img/control1.png";
-                    this.pnlHistorial.Visible = false;
+                    OcultarHistorial();
 
                 }
                 else
@@ -421,7 +471,7 @@ namespace paginaOficial.viewsAdmin
             this.RadMultiSelect1.Enabled = false;
             this.Image1.ImageUrl = "~/Content/img/control1.png";
 
-            this.pnlHistorial.Visible = false;
+            OcultarHistorial();
             this.PanelInfoVisitante.Visible = true;
             this.PanelInfoRegitro.Visible = false;
             this.PanelFotoRegistro.Enabled = false;

@@ -118,6 +118,16 @@ namespace paginaOficial.viewsAdmin
         protected global::System.Web.UI.WebControls.Panel pnlHistorial;
 
         /// <summary>
+        /// Control pnlAlertado.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Panel pnlAlertado;
+
+        /// <summary>
+        /// Control lblAlertado.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblAlertado;
+
+        /// <summary>
         /// Control gvHistorialVisitas.
         /// </summary>
         protected global::System.Web.UI.WebControls.GridView gvHistorialVisitas;

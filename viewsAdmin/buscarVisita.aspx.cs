@@ -150,6 +150,11 @@ namespace paginaOficial.viewsAdmin
 
             //exportacion a exel
             DataSet ds = odbusuario.filtroVisitas(area, lugar, motivo, cedula, visitante, numero, desde, hasta);
+            // alertado/incidente son columnas auxiliares de la pantalla: no van en el reporte
+            foreach (string auxiliar in new[] { "alertado", "incidente" })
+            {
+                if (ds.Tables[0].Columns.Contains(auxiliar)) ds.Tables[0].Columns.Remove(auxiliar);
+            }
             var grid = new GridView();
             grid.DataSource = ds.Tables[0];
             grid.DataBind();
@@ -182,8 +187,158 @@ namespace paginaOficial.viewsAdmin
             }
         }
 
+        // Posicion de la columna Visitante; se calcula con la cabecera, ya que listaVisitas y
+        // filtroVisitas devuelven distintas columnas (el filtro agrega cedula).
+        private int idxVisitante = -1;
+
+        private static bool EsColumna(string encabezado, string nombre)
+        {
+            return string.Equals(encabezado, nombre, StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Marca visualmente a los visitantes alertados (icono junto al nombre) y la visita puntual del
+        /// incidente (fila resaltada + boton "Quitar alerta"). Las columnas auxiliares alertado/incidente
+        /// (siempre las dos ultimas de los SPs) se ocultan por CSS en el .aspx, no aca: este evento solo
+        /// corre al enlazar y en un postback sin re-enlace la grilla se redibuja desde el ViewState.
+        /// </summary>
+        protected void GridView1_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.Header)
+            {
+                idxVisitante = -1;
+                for (int i = 0; i < e.Row.Cells.Count; i++)
+                {
+                    if (EsColumna(e.Row.Cells[i].Text, "Visitante")) idxVisitante = i;
+                }
+            }
+
+            if ((e.Row.RowType == DataControlRowType.DataRow) && (e.Row.DataItem is DataRowView))
+            {
+                DataRowView fila = (DataRowView)e.Row.DataItem;
+                DataColumnCollection columnas = fila.DataView.Table.Columns;
+                bool alertado = columnas.Contains("alertado") && Convert.ToInt32(fila["alertado"]) == 1;
+                bool incidente = columnas.Contains("incidente") && Convert.ToInt32(fila["incidente"]) == 1;
+                string visita = Convert.ToString(fila["#"]);
+                string visitante = Convert.ToString(fila["Visitante"]);
+
+                Button btn = (Button)e.Row.FindControl("btnIncidente");
+                if (btn != null)
+                {
+                    // El argumento lleva "idVisita|Visitante" para mostrarlo en el modal de confirmacion
+                    btn.CommandArgument = visita + "|" + visitante;
+                    if (incidente)
+                    {
+                        btn.CommandName = "quitarincidente";
+                        btn.Text = "Quitar alerta";
+                        btn.CssClass = "btn btn-warning btn-sm text-nowrap";
+                        btn.ToolTip = "Esta es la visita en la que ocurrió el incidente";
+                    }
+                    else
+                    {
+                        btn.CommandName = "incidente";
+                        btn.Text = "⚠ Marcar incidente";
+                        btn.ToolTip = "Marcar un incidente en esta visita y alertar al visitante";
+                    }
+                }
+
+                if (alertado && idxVisitante >= 0)
+                {
+                    e.Row.Cells[idxVisitante].Text = "<span class=\"text-danger font-weight-bold\" title=\"Visitante alertado\">⚠</span> " + e.Row.Cells[idxVisitante].Text;
+                }
+                if (incidente)
+                {
+                    e.Row.CssClass = "fila-incidente";
+                }
+            }
+        }
+
+        // CommandArgument = "idVisita|Visitante" -> (id, nombre)
+        private bool LeerArgumentoVisita(object argumento, out int idVisita, out string visitante)
+        {
+            string texto = Convert.ToString(argumento);
+            int corte = texto.IndexOf('|');
+            visitante = corte >= 0 ? texto.Substring(corte + 1) : "";
+            return int.TryParse(corte >= 0 ? texto.Substring(0, corte) : texto, out idVisita);
+        }
+
+        protected void btnGuardarIncidente_Click(object sender, EventArgs e)
+        {
+            lblErrorIncidente.Text = "";
+            string descripcion = txtIncidente.Text.Trim();
+            if (descripcion == string.Empty)
+            {
+                lblErrorIncidente.Text = "Debe describir qué ocurrió";
+                ScriptManager.RegisterStartupScript(this, GetType(), "Pop", "openModalIncidente()", true);
+                return;
+            }
+            if (Session["incidenteVisita"] == null)
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "Pop", "alert('No se pudo identificar la visita, intente nuevamente');", true);
+                return;
+            }
+
+            odbusuario = new Controlers.BaseDatos();
+            if (odbusuario.marcarIncidente((int)Session["incidenteVisita"], descripcion, ((string)Session["id_user"])))
+            {
+                txtIncidente.Text = "";
+                btnfiltrar_Click(this, EventArgs.Empty);
+                ScriptManager.RegisterStartupScript(this, GetType(), "Pop", "alert('Incidente registrado: el visitante quedó alertado');", true);
+            }
+            else
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "Pop", "alert('No se pudo registrar el incidente');", true);
+            }
+        }
+
+        protected void btnConfirmarQuitarIncidente_Click(object sender, EventArgs e)
+        {
+            if (Session["incidenteVisita"] == null)
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "Pop", "alert('No se pudo identificar la visita, intente nuevamente');", true);
+                return;
+            }
+
+            odbusuario = new Controlers.BaseDatos();
+            if (odbusuario.levantarIncidente((int)Session["incidenteVisita"]))
+            {
+                btnfiltrar_Click(this, EventArgs.Empty);
+                ScriptManager.RegisterStartupScript(this, GetType(), "Pop", "alert('Marca de incidente quitada');", true);
+            }
+            else
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "Pop", "alert('No se pudo quitar la marca de incidente');", true);
+            }
+        }
+
         protected void GridView1_RowCommand(object sender, GridViewCommandEventArgs e)
         {
+            if (e.CommandName == "incidente" || e.CommandName == "quitarincidente")
+            {
+                int idVisita;
+                string visitante;
+                if (!LeerArgumentoVisita(e.CommandArgument, out idVisita, out visitante))
+                {
+                    return;
+                }
+                Session["incidenteVisita"] = idVisita;
+                btnfiltrar_Click(this, EventArgs.Empty); // re-enlaza la grilla para conservar iconos y marcas
+                string descripcionVisita = "Visita #" + idVisita + (visitante != "" ? " — " + visitante : "");
+                if (e.CommandName == "incidente")
+                {
+                    lblIncidenteVisita.Text = Server.HtmlEncode(descripcionVisita);
+                    txtIncidente.Text = "";
+                    lblErrorIncidente.Text = "";
+                    ScriptManager.RegisterStartupScript(this, GetType(), "Pop", "openModalIncidente()", true);
+                }
+                else
+                {
+                    lblQuitarIncidenteVisita.Text = Server.HtmlEncode(descripcionVisita);
+                    ScriptManager.RegisterStartupScript(this, GetType(), "Pop", "openModalQuitarIncidente()", true);
+                }
+                return;
+            }
+
             try
             {
                 odbusuario = new Controlers.BaseDatos();

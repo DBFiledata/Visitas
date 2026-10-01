@@ -146,6 +146,36 @@ namespace paginaOficial.viewsAdmin
         protected global::System.Web.UI.WebControls.TextBox txtVisitante;
 
         /// <summary>
+        /// Control lblIncidenteVisita.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblIncidenteVisita;
+
+        /// <summary>
+        /// Control txtIncidente.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.TextBox txtIncidente;
+
+        /// <summary>
+        /// Control lblErrorIncidente.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblErrorIncidente;
+
+        /// <summary>
+        /// Control btnGuardarIncidente.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Button btnGuardarIncidente;
+
+        /// <summary>
+        /// Control lblQuitarIncidenteVisita.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblQuitarIncidenteVisita;
+
+        /// <summary>
+        /// Control btnConfirmarQuitarIncidente.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Button btnConfirmarQuitarIncidente;
+
+        /// <summary>
         /// Control btnfiltrar.
         /// </summary>
         /// <remarks>
