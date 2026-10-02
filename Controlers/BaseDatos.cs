@@ -631,6 +631,26 @@ namespace paginaOficial.Controlers
             return ds;
         }
 
+        // Datos de la cedula en el padron (solo lectura): cedula, nombres, apellidos, sexo y
+        // nacimiento (MM/dd/yyyy). Vacio = la cedula no esta en el padron.
+        public DataSet consultaPadron(string cedula)
+        {
+            ds = new DataSet();
+            try
+            {
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "consultaPadron";
+                Cmd.Parameters.Add(new MySqlParameter("@p_cedula", cedula));
+                Adap = new MySqlDataAdapter(Cmd);
+                Adap.Fill(ds);
+            }
+            catch (Exception e)
+            {
+            }
+            return ds;
+        }
+
         // Visita grupal (tabla group_visits, independiente de visits). area -> lugar_id (places),
         // lugar -> idtypeOfPlaces (typeofplaces), motivo -> idreasonsForVisits, igual que crearVisitas.
         public bool crearVisitaGrupal(string entidad, int cantidad, int area, int lugar, int motivo, string userName)

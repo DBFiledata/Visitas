@@ -128,6 +128,33 @@ namespace paginaOficial.viewsAdmin
         protected global::System.Web.UI.WebControls.Label lblAlertado;
 
         /// <summary>
+        /// pnlPadron control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlPadron;
+
+        /// <summary>
+        /// pnlPadronAviso control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlPadronAviso;
+
+        /// <summary>
+        /// lblPadron control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblPadron;
+
+        /// <summary>
         /// Control gvHistorialVisitas.
         /// </summary>
         protected global::System.Web.UI.WebControls.GridView gvHistorialVisitas;

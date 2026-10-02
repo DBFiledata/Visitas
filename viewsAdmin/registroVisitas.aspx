@@ -175,6 +175,15 @@
         </div>
     </asp:Panel>
 
+    <%-- Resultado de la consulta al padron: datos cargados (cedula digitada) o validacion del QR --%>
+    <asp:Panel ID="pnlPadron" runat="server" Visible="false">
+        <div class="container pt-2">
+            <asp:Panel ID="pnlPadronAviso" runat="server" CssClass="alert shadow-sm mb-0" role="status">
+                <asp:Label ID="lblPadron" runat="server" Text=""></asp:Label>
+            </asp:Panel>
+        </div>
+    </asp:Panel>
+
     <asp:Panel ID="PanelInfoVisitante" runat="server">
         <div class="container py-2">
             <div class="bg-dark rounded p-3">

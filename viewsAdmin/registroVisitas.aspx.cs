@@ -139,18 +139,41 @@ namespace paginaOficial.viewsAdmin
                     this.btnFotoNew.Enabled = true;
                     this.btnFotoNew.Visible = true;
                     CargarHistorial(txtId.Text);
+                    // Visitante ya registrado: el formulario sale de persons, pero si se escaneo
+                    // el documento igual se valida contra el padron.
+                    if (qrData != string.Empty)
+                    {
+                        ValidarQrContraPadron(qrData, ConsultarPadron(txtId.Text));
+                    }
                 }
                 else
                 {
-                    // Visitante nuevo: siempre pasa por el alta (prellenada desde el QR si lo hay).
-                    // No se consulta el padron: esa rama saltaba a la foto sin insertar en persons,
-                    // y el flujo quedaba trabado al volver al panel principal.
+                    // Visitante nuevo: siempre pasa por el alta, prellenada desde el QR y/o el padron.
+                    // El alta la confirma el operador (registroPersons); el padron solo se lee.
                     this.PanelInfoVisitante.Visible = false;
                     this.PanelFotoRegistro.Visible = false;
                     this.PanelFotoRegistro.Enabled = false;
                     this.PanelInfoRegitro.Visible = true;
                     this.txtCedulaCrear.Text = txtId.Text;
-                    PrellenarRegistroDesdeQr(qrData);
+
+                    DataRow padron = ConsultarPadron(txtId.Text);
+                    if (qrData != string.Empty)
+                    {
+                        PrellenarRegistroDesdeQr(qrData);
+                        ValidarQrContraPadron(qrData, padron);
+                    }
+                    else if (padron != null)
+                    {
+                        MostrarAvisoPadron("alert-info", "&#10004; Datos cargados desde el padr&oacute;n",
+                            "Verifique los datos con el visitante antes de guardar.");
+                    }
+                    else
+                    {
+                        MostrarAvisoPadron("alert-secondary", "C&eacute;dula no encontrada en el padr&oacute;n",
+                            "Complete los datos del visitante manualmente.");
+                    }
+                    // Lo que el QR no trajo (o todo, si la cedula se digito) se completa con el padron.
+                    PrellenarRegistroDesdePadron(padron);
                     RadMultiSelect1.Enable = false;
                 }
             }
@@ -160,10 +183,12 @@ namespace paginaOficial.viewsAdmin
             }
         }
 
+        // Oculta todo lo que corresponde al visitante buscado (historial, alerta y aviso del padron).
         private void OcultarHistorial()
         {
             pnlHistorial.Visible = false;
             pnlAlertado.Visible = false;
+            pnlPadron.Visible = false;
         }
 
         // Muestra el historial de visitas anteriores de la cedula solo si tiene alguna, y avisa si el
@@ -240,11 +265,156 @@ namespace paginaOficial.viewsAdmin
                 RbtnSexoCrear.SelectedValue = sexo;
 
             DateTime nacimiento;
-            string fecha = partes[6].Trim().Replace("/", "").Replace("-", "");
-            if (DateTime.TryParseExact(fecha, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out nacimiento))
+            if (TryFechaQr(partes[6], out nacimiento))
                 txtNacimientoCrear.Text = nacimiento.ToString("yyyy-MM-dd");
 
             RBtnNacionalidadCrear.SelectedValue = partes[7].Trim().ToUpper().StartsWith("PANAME") ? "Panameña" : "Extranjera";
+        }
+
+        // ---- Padron (migracion 0011, SP consultaPadron) ----
+
+        private DataRow ConsultarPadron(string cedula)
+        {
+            odbusuario = new Controlers.BaseDatos();
+            DataSet ds = odbusuario.consultaPadron(cedula);
+            return (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0) ? ds.Tables[0].Rows[0] : null;
+        }
+
+        // Completa SOLO los campos del alta que siguen vacios: con cedula digitada llena todo, y
+        // despues de un QR no pisa lo que el documento trajo.
+        private void PrellenarRegistroDesdePadron(DataRow padron)
+        {
+            if (padron == null) return;
+
+            if (txtNombreCrear.Text.Trim() == string.Empty)
+                txtNombreCrear.Text = (CorregirEnie(Convert.ToString(padron["nombres"])) + " "
+                    + CorregirEnie(Convert.ToString(padron["apellidos"]))).Trim();
+
+            string sexo = Convert.ToString(padron["sexo"]);
+            if (RbtnSexoCrear.SelectedIndex < 0 && RbtnSexoCrear.Items.FindByValue(sexo) != null)
+                RbtnSexoCrear.SelectedValue = sexo;
+
+            DateTime nacimiento;
+            if (txtNacimientoCrear.Text == string.Empty && TryFechaPadron(Convert.ToString(padron["nacimiento"]), out nacimiento))
+                txtNacimientoCrear.Text = nacimiento.ToString("yyyy-MM-dd");
+
+            // Mismo criterio que el SP original datosPadron: quien esta en el padron es panameño.
+            if (RBtnNacionalidadCrear.SelectedIndex < 0)
+                RBtnNacionalidadCrear.SelectedValue = "Panameña";
+        }
+
+        // Compara los datos leidos del QR contra el padron y muestra el resultado. Un campo vacio
+        // de cualquiera de los dos lados no se compara (no hay dato que contradiga).
+        private void ValidarQrContraPadron(string qrData, DataRow padron)
+        {
+            string[] partes = qrData.Split('|');
+            if (partes.Length < 8) return; // QR con solo la cedula: no hay datos que comparar
+
+            if (padron == null)
+            {
+                MostrarAvisoPadron("alert-warning", "&#9888; C&eacute;dula no encontrada en el padr&oacute;n",
+                    "No se pudieron validar los datos del documento escaneado: verif&iacute;quelos con el visitante.");
+                return;
+            }
+
+            List<string> diferencias = new List<string>();
+            string nombresPadron = CorregirEnie(Convert.ToString(padron["nombres"]));
+            string apellidosPadron = CorregirEnie(Convert.ToString(padron["apellidos"]));
+            if (!NombresCoinciden(partes[1], nombresPadron))
+                diferencias.Add(Diferencia("Nombres", partes[1], nombresPadron));
+            if (!NombresCoinciden(partes[2], apellidosPadron))
+                diferencias.Add(Diferencia("Apellidos", partes[2], apellidosPadron));
+
+            string sexoQr = partes[4].Trim().ToUpper();
+            string sexoPadron = Convert.ToString(padron["sexo"]);
+            if ((sexoQr == "M" || sexoQr == "F") && (sexoPadron == "M" || sexoPadron == "F") && sexoQr != sexoPadron)
+                diferencias.Add(Diferencia("Sexo", sexoQr, sexoPadron));
+
+            DateTime nacimientoQr, nacimientoPadron;
+            if (TryFechaQr(partes[6], out nacimientoQr)
+                && TryFechaPadron(Convert.ToString(padron["nacimiento"]), out nacimientoPadron)
+                && nacimientoQr != nacimientoPadron)
+                diferencias.Add(Diferencia("Fecha de nacimiento", nacimientoQr.ToString("dd/MM/yyyy"), nacimientoPadron.ToString("dd/MM/yyyy")));
+
+            if (diferencias.Count == 0)
+            {
+                MostrarAvisoPadron("alert-success", "&#10004; Documento verificado",
+                    "Los datos del QR coinciden con el padr&oacute;n.");
+                return;
+            }
+
+            MostrarAvisoPadron("alert-warning", "&#9888; Los datos del QR no coinciden con el padr&oacute;n",
+                string.Join("<br />", diferencias.Select(d => Server.HtmlEncode(d))));
+            ScriptManager.RegisterStartupScript(this, GetType(), "padronNoCoincide",
+                "alert('" + HttpUtility.JavaScriptStringEncode("LOS DATOS DEL QR NO COINCIDEN CON EL PADRÓN"
+                + Environment.NewLine + Environment.NewLine + string.Join(Environment.NewLine, diferencias)) + "');", true);
+        }
+
+        private static string Diferencia(string campo, string valorQr, string valorPadron)
+        {
+            return campo + ": QR \"" + valorQr.Trim() + "\" / padrón \"" + valorPadron.Trim() + "\"";
+        }
+
+        // titulo y detalle ya vienen como HTML seguro (los datos externos se codifican antes).
+        private void MostrarAvisoPadron(string claseAlerta, string titulo, string detalle)
+        {
+            pnlPadron.Visible = true;
+            pnlPadronAviso.CssClass = "alert shadow-sm mb-0 " + claseAlerta;
+            lblPadron.Text = "<h6 class=\"alert-heading mb-1\">" + titulo + "</h6>" + detalle;
+        }
+
+        // Coinciden si todas las palabras de uno estan en el otro: el QR o el padron pueden traer
+        // solo el primer nombre/apellido, o el apellido de casada. Sin dato de un lado = no se compara.
+        private static bool NombresCoinciden(string a, string b)
+        {
+            string[] palabrasA = NormalizarNombre(a);
+            string[] palabrasB = NormalizarNombre(b);
+            if (palabrasA.Length == 0 || palabrasB.Length == 0) return true;
+            return !palabrasA.Except(palabrasB).Any() || !palabrasB.Except(palabrasA).Any();
+        }
+
+        // Mayusculas, sin tildes ni enie, separado en palabras.
+        private static string[] NormalizarNombre(string valor)
+        {
+            string descompuesto = CorregirEnie(valor ?? "").Normalize(System.Text.NormalizationForm.FormD);
+            var sinTildes = new System.Text.StringBuilder();
+            foreach (char c in descompuesto)
+            {
+                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                    sinTildes.Append(c);
+            }
+            return sinTildes.ToString().ToUpperInvariant()
+                .Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        // En el padron parte de las enies quedaron guardadas como el byte 0xB1, que se lee como '±'.
+        // Se usa la mayuscula si la letra vecina esta en mayuscula (PE±A -> PEÑA, Gudi±o -> Gudiño).
+        private static string CorregirEnie(string valor)
+        {
+            if (string.IsNullOrEmpty(valor) || valor.IndexOf('±') < 0) return valor;
+            char[] letras = valor.ToCharArray();
+            for (int i = 0; i < letras.Length; i++)
+            {
+                if (letras[i] != '±') continue;
+                char vecina = (i > 0 && char.IsLetter(letras[i - 1])) ? letras[i - 1]
+                    : (i + 1 < letras.Length ? letras[i + 1] : 'a');
+                letras[i] = char.IsUpper(vecina) ? 'Ñ' : 'ñ';
+            }
+            return new string(letras);
+        }
+
+        // QR: AAAAMMDD (se toleran separadores).
+        private static bool TryFechaQr(string valor, out DateTime fecha)
+        {
+            return DateTime.TryParseExact(valor.Trim().Replace("/", "").Replace("-", ""), "yyyyMMdd",
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out fecha);
+        }
+
+        // Padron: MM/dd/yyyy (o vacio).
+        private static bool TryFechaPadron(string valor, out DateTime fecha)
+        {
+            return DateTime.TryParseExact(valor.Trim(), new[] { "MM/dd/yyyy", "M/d/yyyy" },
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out fecha);
         }
 
 
