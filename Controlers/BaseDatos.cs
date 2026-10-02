@@ -395,6 +395,27 @@ namespace paginaOficial.Controlers
             }
             return ds;
         }
+
+        // Una pagina de visitas activas (pagina desde 0). Tables[0] = filas (mismas columnas que
+        // listaVisitasActivas), Tables[1] = total de visitas activas.
+        public DataSet listaVisitasActivasPagina(int pagina, int tamano)
+        {
+            try
+            {
+                ds = new DataSet();
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = "listaVisitasActivasPagina";
+                Cmd.Parameters.Add(new MySqlParameter("@p_pagina", pagina));
+                Cmd.Parameters.Add(new MySqlParameter("@p_tamano", tamano));
+                Adap = new MySqlDataAdapter(Cmd);
+                Adap.Fill(ds);
+            }
+            catch (Exception e)
+            {
+            }
+            return ds;
+        }
         
         public string[] infoVisitante(string id)
         {
@@ -1364,6 +1385,37 @@ namespace paginaOficial.Controlers
                 //OError.Error_msg = error_con;
                 return false;
 
+            }
+        }
+
+        // Cantidad de visitas abiertas creadas hoy (-1 si falla la consulta).
+        public int visitasAbiertasHoy()
+        {
+            return ContarDelDia("visitasAbiertasHoy");
+        }
+
+        // Cierra SOLO las visitas abiertas de hoy (las de dias anteriores quedan intactas).
+        // Devuelve cuantas cerro, o -1 si falla.
+        public int finalizarVisitasDelDia()
+        {
+            return ContarDelDia("finalizarVisitasDelDia");
+        }
+
+        private int ContarDelDia(string procedimiento)
+        {
+            try
+            {
+                Cmd.Parameters.Clear();
+                Cmd.CommandType = CommandType.StoredProcedure;
+                Cmd.CommandText = procedimiento;
+                ds = new DataSet();
+                Adap = new MySqlDataAdapter(Cmd);
+                Adap.Fill(ds);
+                return Convert.ToInt32(ds.Tables[0].Rows[0][0]);
+            }
+            catch (Exception e)
+            {
+                return -1;
             }
         }
 
