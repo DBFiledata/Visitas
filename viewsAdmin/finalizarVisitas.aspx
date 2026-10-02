@@ -119,6 +119,16 @@
             opacity: 0.8;
         }
     </style>
+    <%-- Bloque aparte: el <style> anterior tiene llaves sueltas y sintaxis SCSS que podrian arrastrar estas reglas --%>
+    <style type="text/css">
+        /* Paginador del listado: el GridView lo renderiza como una tabla anidada dentro de la fila del pager */
+        .pager-visitas table { margin: .25rem auto; }
+        .pager-visitas td { border: 0 !important; padding: 0 !important; }
+        .pager-visitas a, .pager-visitas span { display: inline-block; min-width: 2.25rem; margin: .1rem; padding: .3rem .6rem;
+            border: 1px solid #6c757d; border-radius: .25rem; color: #fff; text-decoration: none; }
+        .pager-visitas a:hover { background-color: #495057; }
+        .pager-visitas span { background-color: #007bff; border-color: #007bff; font-weight: bold; }
+    </style>
     <script type="text/javascript">
         function iniciarTimer() {
             var b = $find('<%= Timer1.ClientID %>');
@@ -175,12 +185,20 @@
                 <h3>Visitas</h3>
             </div>
             <div class="card-body">
-                <div class="card-header bg-light">
-                    <h5 class=" text-center">Listado de Visitas Activas</h5>
+                <div class="card-header bg-light d-flex flex-wrap align-items-center justify-content-between">
+                    <h5 class="mb-0">Listado de Visitas Activas</h5>
+                    <%-- Cierre masivo: solo visitas abiertas creadas hoy (SP finalizarVisitasDelDia) --%>
+                    <asp:Button ID="btnCerrarVisitasHoy" runat="server" CssClass="btn btn-warning btn-sm my-1" Text="🔐 Cerrar visitas de hoy"
+                        ToolTip="Finaliza todas las visitas abiertas registradas hoy. Las de días anteriores no se modifican."
+                        OnClick="btnCerrarVisitasHoy_Click" />
                 </div>
                 <div class="form-group table-responsive">
                     <div class="table-responsive">
-                        <asp:GridView ID="GridView1" CssClass="table table-striped table-dark table-bordered  " Font-Size="Small" Width="100%" CellSpacing="0" runat="server" OnRowCommand="GridView1_RowCommand">
+                        <%-- Paginacion del lado del servidor: el SP trae solo la pagina pedida (AllowCustomPaging + VirtualItemCount) --%>
+                        <asp:GridView ID="GridView1" CssClass="table table-striped table-dark table-bordered  " Font-Size="Small" Width="100%" CellSpacing="0" runat="server" OnRowCommand="GridView1_RowCommand"
+                            AllowPaging="true" AllowCustomPaging="true" PageSize="50" OnPageIndexChanging="GridView1_PageIndexChanging">
+                            <PagerSettings Mode="NumericFirstLast" Position="TopAndBottom" PageButtonCount="10" FirstPageText="« Primera" LastPageText="Última »" />
+                            <PagerStyle CssClass="pager-visitas" HorizontalAlign="Center" />
                             <Columns>
                                 <asp:TemplateField HeaderText="Finalizar">
                                     <ItemTemplate>
@@ -192,6 +210,7 @@
                             </Columns>
                         </asp:GridView>
                     </div>
+                    <asp:Label ID="lblResumenVisitas" runat="server" CssClass="d-block text-center text-muted small"></asp:Label>
                 </div>
             </div>
         </ContentTemplate>
